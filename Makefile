@@ -34,15 +34,15 @@ HDR_STRIP := $(subst ./,,$(wildcard ${HDRDIR}/${HFILES}))
 
 OBJS := $(patsubst ${SRCDIR}/%,%,$(subst .c,.o, $(SRC)))
 FULLOBJS := $(patsubst %,${FULLOBJDIR}/%,${OBJS})
-DEBUG = -g
-G++ = `which gcc`
+DEBUG = -g -Wall
+CC = `which gcc`
 BINARY = double
 EXEC = ${BUILDDIR}/${BINARY}
 LINT = cpplint
 LINTFLAGS = --verbose=2
 
 STD = -std=gnu2x
-CPPFLAGS += -I${HDRDIR} ${STD}
+CFLAGS += -I${HDRDIR} ${STD}
 
 all: ${BUILDDIR} ${FULLOBJDIR} ${EXEC}
 #	@echo "---------------Source Files------------------"
@@ -63,13 +63,13 @@ $(FULLOBJDIR):
 
 
 ${FULLOBJDIR}/%.o: ${SRCDIR}/%.c ${HDRDIR}/%.h
-	${G++} ${CPPFLAGS} ${DEBUG} -c $< -o $@
+	${CC} ${CFLAGS} ${DEBUG} -c $< -o $@
 ${FULLOBJDIR}/%.o: ${SRCDIR}/%.c 
-	${G++} ${CPPFLAGS} ${DEBUG} -c $< -o $@
+	${CC} ${CFLAGS} ${DEBUG} -c $< -o $@
 	
 ${EXEC}: ${FULLOBJS}
 	@echo ${FULLOBJS}
-	${G++} ${CPPFLAGS} ${DEBUG} $^ -o $@
+	${CC} ${CFLAGS} ${DEBUG} $^ -o $@
 
 lint:
 	 ${LINT} ${LINTFLAGS} src/*.c include/*.h
