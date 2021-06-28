@@ -15,13 +15,19 @@ int Arith_min(const int x, const int y) {
 	return x > y ? y : x;
 }
 int Arith_div(const int x, const int y) {
-	if( (-13/5 == -2) && ((x < 0) != (y < 0)) && (x%y != 0) )
+	volatile const int truncTop = -13;
+	volatile const int truncBottom = 5;
+	volatile const int truncDiv = -2;
+	if((truncTop / truncBottom == truncDiv) && ((x < 0) != (y < 0)) && (x%y != 0))
 		return x/y - 1;
 	else
 		return x/y;
 }
 int Arith_mod(const int x, const int y) {
-	if( (-13/5 == -2) && ((x < 0) != (y < 0)) && (x%y != 0) )
+	volatile const int truncTop = -13;
+	volatile const int truncBottom = 5;
+	volatile const int truncDiv = -2;
+	if((truncTop / truncBottom == truncDiv) && ((x < 0) != (y < 0)) && (x%y != 0))
 		return x%y + y;
 	else
 		return x%y;

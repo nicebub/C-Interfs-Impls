@@ -13,9 +13,11 @@
 typedef struct T* T;
 
 extern T Stack_new(void);
+extern T Stack_newWithSize(int s);
 extern int Stack_empty(const struct T* stack);
 extern void Stack_push(T stack, void* x);
 extern void* Stack_pop(T stack);
+extern void* Stack_peek(T stack);
 extern void Stack_free(T* stack);
 
 #undef T
