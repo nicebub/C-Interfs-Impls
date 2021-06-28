@@ -42,7 +42,7 @@ LINT = cpplint
 LINTFLAGS = --verbose=2
 
 STD = -std=gnu2x
-CFLAGS += -I${HDRDIR} ${STD}
+CFLAGS += -I${HDRDIR} -I. ${STD}
 
 all: ${BUILDDIR} ${FULLOBJDIR} ${EXEC}
 #	@echo "---------------Source Files------------------"
