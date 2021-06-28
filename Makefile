@@ -32,13 +32,13 @@ HDR_STRIP := $(subst ./,,$(wildcard ${HDRDIR}/*.hpp))
 OBJS := $(patsubst ${SRCDIR}/%,%,$(subst .cpp,.o, $(SRC)))
 FULLOBJS := $(patsubst %,${FULLOBJDIR}/%,${OBJS})
 DEBUG = -g
-G++ = `which g++`
+G++ = `which gcc`
 BINARY = bytecode
 EXEC = ${BUILDDIR}/${BINARY}
 LINT = cpplint
 LINTFLAGS = --verbose=2
 
-STD = -std=c++2a
+STD = -std=gnu2a
 CPPFLAGS += -I${HDRDIR} ${STD}
 
 all: ${BUILDDIR} ${FULLOBJDIR} ${EXEC}
