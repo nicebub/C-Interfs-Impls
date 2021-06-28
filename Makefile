@@ -24,21 +24,24 @@ HDRDIR = include
 
 FULLOBJDIR = ${BUILDDIR}/${OBJDIR}
 
-SRC := $(wildcard ${SRCDIR}/*.cpp)
-HDR := $(wildcard ${HDRDIR}/*.hpp)
-SRC_STRIP := $(subst ./,,$(wildcard ${SRCDIR}/*.cpp))
-HDR_STRIP := $(subst ./,,$(wildcard ${HDRDIR}/*.hpp))
+SFILES = *.c
+HFILES = *.h
 
-OBJS := $(patsubst ${SRCDIR}/%,%,$(subst .cpp,.o, $(SRC)))
+SRC := $(wildcard ${SRCDIR}/${SFILES})
+HDR := $(wildcard ${HDRDIR}/${HFILES})
+SRC_STRIP := $(subst ./,,$(wildcard ${SRCDIR}/${SFILES}))
+HDR_STRIP := $(subst ./,,$(wildcard ${HDRDIR}/${HFILES}))
+
+OBJS := $(patsubst ${SRCDIR}/%,%,$(subst .c,.o, $(SRC)))
 FULLOBJS := $(patsubst %,${FULLOBJDIR}/%,${OBJS})
 DEBUG = -g
 G++ = `which gcc`
-BINARY = bytecode
+BINARY = double
 EXEC = ${BUILDDIR}/${BINARY}
 LINT = cpplint
 LINTFLAGS = --verbose=2
 
-STD = -std=gnu2a
+STD = -std=gnu2x
 CPPFLAGS += -I${HDRDIR} ${STD}
 
 all: ${BUILDDIR} ${FULLOBJDIR} ${EXEC}
@@ -59,9 +62,9 @@ $(FULLOBJDIR):
 	$(MKDIR) $(FULLOBJDIR)
 
 
-${FULLOBJDIR}/%.o: ${SRCDIR}/%.cpp ${HDRDIR}/%.hpp
+${FULLOBJDIR}/%.o: ${SRCDIR}/%.c ${HDRDIR}/%.h
 	${G++} ${CPPFLAGS} ${DEBUG} -c $< -o $@
-${FULLOBJDIR}/%.o: ${SRCDIR}/%.cpp 
+${FULLOBJDIR}/%.o: ${SRCDIR}/%.c 
 	${G++} ${CPPFLAGS} ${DEBUG} -c $< -o $@
 	
 ${EXEC}: ${FULLOBJS}
@@ -69,7 +72,7 @@ ${EXEC}: ${FULLOBJS}
 	${G++} ${CPPFLAGS} ${DEBUG} $^ -o $@
 
 lint:
-	 ${LINT} ${LINTFLAGS} src/*.cpp include/*.hpp
+	 ${LINT} ${LINTFLAGS} src/*.c include/*.h
 
 clean:
 	${CLEANUP} ${FULLOBJDIR}/*
