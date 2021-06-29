@@ -11,11 +11,8 @@
 //  #include "include/assert.h" for later
 //  #include "include/mem.h" for later
 #include "include/stack.h"
-
+#include "include/defines.h"
 #define MAGIC_ID 999
-
-#define isBadPtr(p) ((p) == NULL) ? 1 : 0
-
 
 #define T Stack_T
 struct T {
