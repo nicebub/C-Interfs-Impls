@@ -16,7 +16,8 @@
 // #include "include/mem.h" for later
 
 // #include "include/assert.h" for later
-#define BSIZE 2048
+ #define BSIZE 2048
+// #define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
 
 static struct atom {
@@ -25,9 +26,13 @@ static struct atom {
 	char* str;
 	} *buckets[BSIZE];
 
-	static const unsigned long scatter[] = {
-	244725864, 733834156, 883256764
-	};
+	static unsigned long scatter[256] = {};
+
+void Atom_fillRandom() {
+	for(int i=0;i<256;i++)
+		scatter[i] = rand();
+}
+
 const char* Atom_string(const char* str) {
 	assert(!isBadPtr(str));
 	return Atom_new(str, strlen(str));
@@ -60,7 +65,7 @@ const char* Atom_new(const char* str, const int len) {
 	assert(!isBadPtr(str));
 	assert(len >= 0);
 	for(h = 0 , i = 0; i < len; i++)
-	h = (h << 1) + scatter[(unsigned char)str[i]];
+		h = (h << 1) + scatter[(unsigned char)str[i]];
 	h %= NELEMS(buckets);
 	for(p = buckets[h]; p; p = p->link) {
 		if(len == p->len) {
@@ -69,6 +74,7 @@ const char* Atom_new(const char* str, const int len) {
 				return p->str;
 		}
 	}
+	#define ALLOC(x) malloc((x))
 		p = ALLOC(sizeof (*p) + len + 1);
 		p->len = len;
 		p->str = (char*)(p + 1);
@@ -94,4 +100,17 @@ int Atom_length(const char* str) {
 
 	assert(0);
 	return 0;
+}
+
+void Atom_closure(void(*func1)(const int bucketNum, int* cl, int* cl2),
+						void(*func2)(void* cur, int* cl, int* cl2),
+						void(*func3)(const int bucketNum,int* cl, int* cl2),int* cl, int* cl2) {
+	for(int i=0;i < BSIZE; i++){
+		struct atom **t = &buckets[i];
+		func1(i,cl,cl2);
+		for(; *t; *t = (*t)->link) {
+			func2(*t,cl,cl2);
+		}
+		func3(i,cl,cl2);
+	}
 }

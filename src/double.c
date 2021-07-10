@@ -15,7 +15,7 @@ int linenum;
 
 int getword(FILE* fp, char *, const int);
 void doubleword(const char*, FILE *);
-
+/*
 int main(int argc, const char* argv[]) {
 	for(int i = 0; i < argc; i++) {
 		FILE* fp = fopen(argv[i], "r");
@@ -31,7 +31,7 @@ int main(int argc, const char* argv[]) {
 	if(argc == 1 ) doubleword(NULL, stdin);
 	return EXIT_SUCCESS;
 }
-
+*/
 int getword(FILE* fp, char* buf, const int size) {
 	int c;
 

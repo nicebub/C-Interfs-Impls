@@ -7,6 +7,7 @@
 // the std gnu2x
 
 #include <stddef.h>
+#include <stdlib.h>
 #include <assert.h>
 //  #include "include/assert.h" for later
 //  #include "include/mem.h" for later
@@ -24,6 +25,7 @@ struct T {
 		} *head;
 };
 
+#define NEW(x) x = malloc(sizeof(*(x)))
 T Stack_new(void) {
 	T stack;
 	NEW(stack);
@@ -64,6 +66,7 @@ void* Stack_peek(T stack) {
 	assert(stack->count > 0);
 	return stack->head->x;
 }
+#define FREE(x) free((x))
 void* Stack_pop(T stack) {
 	void* x;
 	struct elem*  t;

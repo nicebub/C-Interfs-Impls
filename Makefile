@@ -36,7 +36,7 @@ OBJS := $(patsubst ${SRCDIR}/%,%,$(subst .c,.o, $(SRC)))
 FULLOBJS := $(patsubst %,${FULLOBJDIR}/%,${OBJS})
 DEBUG = -g -Wall
 CC = `which gcc`
-BINARY = double
+BINARY = bin
 EXEC = ${BUILDDIR}/${BINARY}
 LINT = cpplint
 LINTFLAGS = --verbose=2

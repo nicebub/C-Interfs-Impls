@@ -16,7 +16,7 @@ extern int getword(FILE* fp, char *, const int);
 
 struct timeval clock_function(FILE* fp, char*(strcpy_f)(char*, const char*),
 											int* words);
-char *strcpy_a(char dst[], const char src[]);
+char* strcpy_a(char dst[], const char src[]);
 char* strcpy_b(char *dst, const char* src);
 
 char *strcpy_a(char dst[], const char src[]) {
