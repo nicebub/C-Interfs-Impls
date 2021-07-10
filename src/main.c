@@ -4,10 +4,11 @@
 #include <string.h>
 #include <errno.h>
 #include "atom.h"
+#include "atom2.h"
 extern int getword(FILE* fp, char *, const int);
 extern struct timeval clock_function(FILE* fp, char*(func)(char*, const char*), int*words);
-extern char* strcpy_a(char[], const char[]);
-extern char* strcpy_b(char*, const char*); 
+//extern char* strcpy_a(char[], const char[]);
+//extern char* strcpy_b(char*, const char*); 
 
 void beginSum(const int b, int* cl, int* cl2){
 	(*cl) = 0;
@@ -52,8 +53,13 @@ int main(int argc, const char* argv[]) {
 	}
 	int words = 0;
 	struct timeval time1;
-	sranddev();
+
+//	sranddev();
+	srand(1);
 	Atom_fillRandom();
+	srand(1);
+	Atom2_fillRandom();
+
 	time1 = timeAtomNew(fp, Atom_string);
 	int sum;
 	int dist[MAX_DIST] = {0};
@@ -68,6 +74,21 @@ int main(int argc, const char* argv[]) {
 	printf("Atom_string/Atom_new: num word: %d time %ld seconds %d microseconds\n", words,
 				time1.tv_sec , time1.tv_usec);
 	fseek(fp, 0UL, SEEK_SET);
+	{
+		time1 = timeAtomNew(fp, Atom2_string);
+		int sum;
+		int dist[MAX_DIST] = {0};
+		Atom2_closure(beginSum,atomSum,finishSum,&sum,(int*)&dist);
+		printf("distribution of numbers:\n");
+		for(int i=0;i<MAX_DIST;i++)
+			printf("[%d]	",i+1);
+		printf("\n");
+		for(int i=0;i<MAX_DIST;i++)
+			printf("%d	",dist[i]);
+		printf("\n");
+		printf("Atom2_string/Atom2_new: num word: %d time %ld seconds %d microseconds\n", words,
+					time1.tv_sec , time1.tv_usec);
+	}
 	fclose(fp);
 	return EXIT_SUCCESS;
 }
