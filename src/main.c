@@ -16,7 +16,12 @@
 #include "atom2.h"
 #include "atom3.h"
 #include "atom4.h"
+#include "atom5.h"
+// #include "mem.h"
 extern int getword(FILE* fp, char *, const int);
+#define MAX_DIST 50
+#define ALLOC(x) malloc((x))
+#define FREE(x) free(*(x)); *(x) = NULL
 
 #define VariableAtomLengthFnDecl int(*Atom_lng)(const char* str)
 #define VariableAtomLengthFn Atom_lng
@@ -27,6 +32,8 @@ extern int getword(FILE* fp, char *, const int);
 #define VariableAtomFillRandomFnDecl void (*Atom_fRndm)(void)
 #define VariableAtomFillRandomFn Atom_fRndm
 
+#define VariableAtomInitFnDecl void (*Atm_init)(const int hint)
+#define VariableAtomInitFn Atm_init
 #define closureFn1Decl void(*func1)(const int bucketNum, int* cl, int* cl2)
 #define closureFn1 func1
 #define closureFn2Decl void(*func2)(const char* cur, int* cl, int* cl2,VariableAtomLengthFnDecl)
@@ -38,6 +45,8 @@ extern int getword(FILE* fp, char *, const int);
 #define VariableAtomClosureFn Atom_clsr
 
 //extern struct timeval clock_function(FILE* fp, char*(func)(char*, const char*), int*words);
+void run_timer(FILE* fp, struct timeval seed,VariableAtomFillRandomFnDecl,
+			VariableAtomStringFnDecl, VariableAtomClosureFnDecl);
 
 void beginSum(const int b, int* cl, int* cl2){
 	cl[0] = 0;
@@ -93,7 +102,13 @@ struct timeval timerfunc(FILE* fp,VariableAtomStringFnDecl) {
 	time2.tv_usec -= time1.tv_usec;
 	return time2;
 }
-#define MAX_DIST 32
+void run_timer_new(FILE* fp, struct timeval seed, long hint,
+    VariableAtomFillRandomFnDecl, VariableAtomStringFnDecl,
+    VariableAtomClosureFnDecl,VariableAtomInitFnDecl)
+{
+    VariableAtomInitFn(hint);
+    run_timer(fp,seed,Atom5_fillRandom,Atom5_string,Atom5_closure);
+}
 
 void run_timer(FILE* fp, struct timeval seed,VariableAtomFillRandomFnDecl,
 						VariableAtomStringFnDecl, VariableAtomClosureFnDecl) {
@@ -132,20 +147,29 @@ int main(int argc, const char* argv[]) {
 	FILE* fp;
 	struct timeval seed;
 	int result;
-	if((fp = fopen(argv[1], "r") ) == NULL) {
-		fprintf(stderr, "%s\n", strerror(errno) );
-		return EXIT_FAILURE;
-	}
-	if( ( (result =  gettimeofday(&seed,NULL)) == -1 ) ) {
-		fprintf(stderr, "%s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
+	if(argc > 2){
+		if((fp = fopen(argv[1], "r") ) == NULL) {
+			fprintf(stderr, "%s\n", strerror(errno) );
+			return EXIT_FAILURE;
+		}
+		argv++;
+		argv++;
+		char * str = ALLOC(sizeof (*str)* strlen(*argv));
+		strcpy(str,*argv);
+		long hint = strtol(str,NULL,10);
+		FREE(&str);
+		if( ( (result =  gettimeofday(&seed,NULL)) == -1 ) ) {
+			fprintf(stderr, "%s\n", strerror(errno));
+			exit(EXIT_FAILURE);
+		}
 
-	run_timer(fp,seed,Atom_fillRandom,Atom_string,Atom_closure);
-	run_timer(fp,seed,Atom2_fillRandom,Atom2_string,Atom2_closure);
-	run_timer(fp,seed,Atom3_fillRandom,Atom3_string,Atom3_closure);
-	run_timer(fp,seed,Atom4_fillRandom,Atom4_string,Atom4_closure);
+//		run_timer(fp,seed,Atom_fillRandom,Atom_string,Atom_closure);
+//		run_timer(fp,seed,Atom2_fillRandom,Atom2_string,Atom2_closure);
+//		run_timer(fp,seed,Atom3_fillRandom,Atom3_string,Atom3_closure);
+//		run_timer(fp,seed,Atom4_fillRandom,Atom4_string,Atom4_closure);
+		run_timer_new(fp,seed,hint,Atom5_fillRandom,Atom5_string,Atom5_closure,Atom5_init);
 
-	fclose(fp);
+		fclose(fp);
+	}
 	return EXIT_SUCCESS;
 }
