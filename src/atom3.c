@@ -11,8 +11,8 @@
 #include <string.h>
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
-#include "include/atom3.h"
-#include "include/defines.h"
+#include "atom3.h"
+#include "defines.h"
 // #include "include/mem.h" for later
 
 // #include "include/assert.h" for later
@@ -35,7 +35,7 @@ void Atom3_fillRandom() {
 
 const char* Atom3_string(const char* str) {
 	assert(!isBadPtr(str));
-	return Atom3_new(str, strlen(str));
+	return Atom3_new(str, (int)strlen(str));
 }
 #define CHAR_LEN 43
 const char* Atom3_int(const long n) {
@@ -54,7 +54,7 @@ const char* Atom3_int(const long n) {
 	while((m /=10) > 0);
 	if(n < 0)
 		*--s = '-';
-	return Atom3_new(s, (str + sizeof str) - s);
+	return Atom3_new(s, (int)((str + sizeof str) - s));
 }
 
 const char* Atom3_new(const char* str, const int len) {
@@ -106,14 +106,14 @@ int Atom3_length(const char* str) {
 }
 
 void Atom3_closure(void(*func1)(const int bucketNum, int* cl, int* cl2),
-						void(*func2)(void* cur, int* cl, int* cl2),
+						void(*func2)(const char* cur, int* cl, int* cl2,int(*Atom_lng)(const char* str)),
 						void(*func3)(const int bucketNum,int* cl, int* cl2),int* cl, int* cl2) {
 	for(int i=0;i < BSIZE; i++){
-		struct atom3 **t = &buckets[i];
-		func1(i,cl,cl2);
-		for(; *t; *t = (*t)->link) {
-			func2(*t,cl,cl2);
+		struct atom3 *t = buckets[i];
+		if(func1)func1(i,cl,cl2);
+		for(; t; t = t->link) {
+			if(func2)func2(t->str,cl,cl2,Atom3_length);
 		}
-		func3(i,cl,cl2);
+		if(func3)func3(i,cl,cl2);
 	}
 }

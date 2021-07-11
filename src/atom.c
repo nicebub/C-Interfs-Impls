@@ -5,14 +5,13 @@
 
 // I have made a few changes and revisions to make the code more modern as of
 // the std gnu2x
-
 #include <unistd.h>
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
-#include "include/atom.h"
-#include "include/defines.h"
+#include "atom.h"
+#include "defines.h"
 // #include "include/mem.h" for later
 
 // #include "include/assert.h" for later
@@ -27,14 +26,14 @@ static struct atom {
 
 	static unsigned long scatter[256] = {};
 
-void Atom_fillRandom() {
+void Atom_fillRandom(void) {
 	for(int i=0;i<256;i++)
 		scatter[i] = rand();
 }
 
 const char* Atom_string(const char* str) {
 	assert(!isBadPtr(str));
-	return Atom_new(str, strlen(str));
+	return Atom_new(str, (int)strlen(str));
 }
 #define CHAR_LEN 43
 const char* Atom_int(const long n) {
@@ -101,14 +100,14 @@ int Atom_length(const char* str) {
 }
 
 void Atom_closure(void(*func1)(const int bucketNum, int* cl, int* cl2),
-						void(*func2)(void* cur, int* cl, int* cl2),
+						void(*func2)(const char* cur, int* cl, int* cl2,int(*Atom_lng)(const char* str)),
 						void(*func3)(const int bucketNum,int* cl, int* cl2),int* cl, int* cl2) {
 	for(int i=0;i < BSIZE; i++){
-		struct atom **t = &buckets[i];
-		func1(i,cl,cl2);
-		for(; *t; *t = (*t)->link) {
-			func2(*t,cl,cl2);
+		struct atom *t = buckets[i];
+		if(func1)func1(i,cl,cl2);
+		for(; t; t = t->link) {
+			if(func2)func2(t->str,cl,cl2,Atom_length);
 		}
-		func3(i,cl,cl2);
+		if(func3)func3(i,cl,cl2);
 	}
 }
