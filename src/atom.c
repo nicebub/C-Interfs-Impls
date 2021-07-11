@@ -16,8 +16,7 @@
 // #include "include/mem.h" for later
 
 // #include "include/assert.h" for later
- #define BSIZE 2048
-// #define BSIZE 2039
+#define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
 
 static struct atom {
@@ -89,11 +88,10 @@ const char* Atom_new(const char* str, const int len) {
 
 int Atom_length(const char* str) {
 	struct atom* p;
-	int i;
 
 	assert(!isBadPtr(str));
 
-	for(i = 0; i < NELEMS(buckets); i++)
+	for(int i = 0; i < NELEMS(buckets); i++)
 		for( p = buckets[i]; p; p = p->link)
 			if(p->str == str)
 				return p->len;
