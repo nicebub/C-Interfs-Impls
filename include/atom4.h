@@ -5,7 +5,7 @@
 
 // I have made a few changes and revisions to make the code more modern as of
 // the std gnu2x
-
+// INCLUDES BEST VERSION OF ATOM_LENGTH
 #ifndef INCLUDE_ATOM4_H_
 #define INCLUDE_ATOM4_H_
 

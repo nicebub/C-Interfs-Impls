@@ -5,6 +5,9 @@
 
 // I have made a few changes and revisions to make the code more modern as of
 // the std gnu2x
+// INCLUDES MORE BYTES IN EACH ATOM TO STORE THE HASH, and lookup use 
+// in Atom_new, negligible changes from this in time except sometimes
+// on my cpu it seems to take twice as long
 
 #ifndef INCLUDE_ATOM3_H_
 #define INCLUDE_ATOM3_H_

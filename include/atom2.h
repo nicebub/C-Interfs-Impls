@@ -5,6 +5,9 @@
 
 // I have made a few changes and revisions to make the code more modern as of
 // the std gnu2x
+// INCLUDES AGAINST STD SYNTAX FOR "TRICK" STYLE OF ATTACHING STR TO
+// END OF atom struct but accessing it goes through struct boundaries
+// undefined behavior
 
 #ifndef INCLUDE_ATOM2_H_
 #define INCLUDE_ATOM2_H_

@@ -16,6 +16,8 @@
 // #include "include/mem.h" for later
 
 // #include "include/assert.h" for later
+// INCLUDES BEST VERSION OF ATOM_LENGTH
+
 #define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
 
