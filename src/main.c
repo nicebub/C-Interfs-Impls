@@ -44,9 +44,16 @@ extern int getword(FILE* fp, char *, const int);
 												closureFn3Decl,int* cl, int* cl2)
 #define VariableAtomClosureFn Atom_clsr
 
+#define VariableAtomvloadFnDecl void (*Atm_vload)(const char *str, ...)
+#define VariableAtomvloadFn Atm_vload
+
+#define VariableAtomaloadFnDecl void (*Atm_aload)(const char * strs[])
+#define VariableAtomaloadFn Atm_aload
+
 //extern struct timeval clock_function(FILE* fp, char*(func)(char*, const char*), int*words);
 void run_timer(FILE* fp, struct timeval seed,VariableAtomFillRandomFnDecl,
-			VariableAtomStringFnDecl, VariableAtomClosureFnDecl);
+			VariableAtomStringFnDecl, VariableAtomClosureFnDecl,VariableAtomvloadFnDecl,
+			VariableAtomaloadFnDecl);
 
 void beginSum(const int b, int* cl, int* cl2){
 	cl[0] = 0;
@@ -103,22 +110,35 @@ struct timeval timerfunc(FILE* fp,VariableAtomStringFnDecl) {
 	return time2;
 }
 void run_timer_new(FILE* fp, struct timeval seed, long *hint,
-    VariableAtomFillRandomFnDecl, VariableAtomStringFnDecl,
-    VariableAtomClosureFnDecl,VariableAtomInitFnDecl)
+	VariableAtomFillRandomFnDecl, VariableAtomStringFnDecl,
+	VariableAtomClosureFnDecl,VariableAtomInitFnDecl,VariableAtomvloadFnDecl,VariableAtomaloadFnDecl)
 {
-    if(hint)VariableAtomInitFn(*hint);
-    run_timer(fp,seed,Atom5_fillRandom,Atom5_string,Atom5_closure);
+	if(hint)
+		VariableAtomInitFn(*hint);
+	run_timer(fp,seed,VariableAtomFillRandomFn,VariableAtomStringFn,
+			VariableAtomClosureFn,VariableAtomvloadFn,VariableAtomaloadFn);
 }
 
 void run_timer(FILE* fp, struct timeval seed,VariableAtomFillRandomFnDecl,
-						VariableAtomStringFnDecl, VariableAtomClosureFnDecl) {
+						VariableAtomStringFnDecl, VariableAtomClosureFnDecl,
+	VariableAtomvloadFnDecl,VariableAtomaloadFnDecl) {
 	struct timeval time1,time2;
 	int  *sumNwords, dist[MAX_DIST] = {0} ;
 
 	fseek(fp, 0UL, SEEK_SET);
 	srand(seed.tv_sec);
 	VariableAtomFillRandomFn();
-	
+    VariableAtomvloadFn("mad", "about","you", "arrested development", "is", "cool");
+    static const char* my_strings[] = {
+	   "from",
+	   "the",
+	   "array",
+	   "could be already",
+	   "in this",
+	   NULL
+    };
+    VariableAtomaloadFn(my_strings);
+
 	time1 = timerfunc(fp, VariableAtomStringFn);
 	time2 = cltimerfunc(VariableAtomClosureFn);
 	sumNwords = malloc(sizeof *sumNwords * 3);
@@ -171,7 +191,7 @@ int main(int argc, const char* argv[]) {
 //		run_timer(fp,seed,Atom2_fillRandom,Atom2_string,Atom2_closure);
 //		run_timer(fp,seed,Atom3_fillRandom,Atom3_string,Atom3_closure);
 //		run_timer(fp,seed,Atom4_fillRandom,Atom4_string,Atom4_closure);
-		run_timer_new(fp,seed,hint,Atom5_fillRandom,Atom5_string,Atom5_closure,Atom5_init);
+		run_timer_new(fp,seed,hint,Atom5_fillRandom,Atom5_string,Atom5_closure,Atom5_init,Atom_vload,Atom_aload);
 
 		fclose(fp);
 	}

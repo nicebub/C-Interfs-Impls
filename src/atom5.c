@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
+#include <stdarg.h>
 #include "atom5.h"
 #include "defines.h"
 // #include "include/mem.h" for later
@@ -186,10 +187,18 @@ void Atom_reset(void) {
 
 }
 void Atom_vload(const char *str, ...) {
-	
+	va_list ap;
+	va_start(ap,str);
+	assert(str);
+	for(	; str; str = va_arg(ap, const char*)) {
+		Atom5_string(str);
+	}
+	va_end(ap);
 }
 void Atom_aload(const char * strs[]) {
-	
+	assert(strs);
+	while(*strs)
+		Atom5_string(*strs++);
 }
 const char* Atom_add(const char* str, int len) {
 	return NULL;
