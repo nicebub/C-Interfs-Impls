@@ -6,7 +6,7 @@
 // I have made a few changes and revisions to make the code more modern as of
 // the std gnu2x
 
-#include "arith.h"
+#include "include/arith.h"
 
 int Arith_max(const int x, const int y) {
 	return x > y ? x : y;

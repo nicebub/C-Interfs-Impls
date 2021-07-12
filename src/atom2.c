@@ -13,8 +13,8 @@
 #include <string.h>
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
-#include "atom2.h"
-#include "defines.h"
+#include "include/atom2.h"
+#include "include/defines.h"
 // #include "include/mem.h" for later
 
 // #include "include/assert.h" for later
@@ -27,10 +27,10 @@ static struct atom2 {
 	char str[1];
 	} *buckets[BSIZE];
 
-	static unsigned long scatter[256] = {};
+	static unsigned long scatter[256] = { };
 
 void Atom2_fillRandom() {
-	for(int i=0;i<256;i++)
+	for(int i = 0; i < 256; i++)
 		scatter[i] = rand();
 }
 
@@ -52,7 +52,7 @@ const char* Atom2_int(const long n) {
 		m = n;
 	do
 		*--s = m%10 + '0';
-	while((m /=10) > 0);
+	while((m /= 10) > 0);
 	if(n < 0)
 		*--s = '-';
 	return Atom2_new(s, (str + sizeof str) - s);
@@ -78,7 +78,7 @@ const char* Atom2_new(const char* str, const int len) {
 	#define ALLOC(x) malloc((x))
 		p = ALLOC(sizeof (*p) + len);
 		p->len = len;
-//		p->str = (char*)(p + 1);
+// 		p->str = (char*)(p + 1);
 // 		p->str = (char*)(p + 1);
 		if(len > 0)
 		memcpy(p->str, str, len);
@@ -102,14 +102,16 @@ int Atom2_length(const char* str) {
 }
 
 void Atom2_closure(void(*func1)(const int bucketNum, int* cl, int* cl2),
-						void(*func2)(const char* cur, int* cl, int* cl2,int(*Atom_lng)(const char* str)),
-						void(*func3)(const int bucketNum,int* cl, int* cl2),int* cl, int* cl2) {
-	for(int i=0;i < BSIZE; i++){
+						void(*func2)(const char* cur, int* cl, int* cl2,
+							int(*Atom_lng)(const char* str)),
+						void(*func3)(const int bucketNum, int* cl, int* cl2),
+							int* cl, int* cl2) {
+	for(int i = 0; i < BSIZE; i++) {
 		struct atom2 *t = buckets[i];
-		if(func1)func1(i,cl,cl2);
+		if(func1)func1(i, cl, cl2);
 		for(; t; t = t->link) {
-			if(func2)func2(t->str,cl,cl2,Atom2_length);
+			if(func2)func2(t->str, cl, cl2, Atom2_length);
 		}
-		if(func3)func3(i,cl,cl2);
+		if(func3)func3(i, cl, cl2);
 	}
 }

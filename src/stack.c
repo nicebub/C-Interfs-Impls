@@ -11,8 +11,8 @@
 #include <assert.h>
 //  #include "include/assert.h" for later
 //  #include "include/mem.h" for later
-#include "stack.h"
-#include "defines.h"
+#include "include/stack.h"
+#include "include/defines.h"
 #define MAGIC_ID 999
 
 #define T Stack_T

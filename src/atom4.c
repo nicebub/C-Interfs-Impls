@@ -11,8 +11,8 @@
 #include <string.h>
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
-#include "atom4.h"
-#include "defines.h"
+#include "include/atom4.h"
+#include "include/defines.h"
 // #include "include/mem.h" for later
 
 // #include "include/assert.h" for later
@@ -30,7 +30,7 @@ static struct atom4 {
 	static unsigned long scatter[256] = {};
 
 void Atom4_fillRandom() {
-	for(int i=0;i<256;i++)
+	for(int i = 0; i < 256; i++)
 		scatter[i] = rand();
 }
 
@@ -51,8 +51,8 @@ const char* Atom4_int(const long n) {
 	else
 		m = n;
 	do
-		*--s = m%10 + '0';
-	while((m /=10) > 0);
+		*--s = m % 10 + '0';
+	while((m /= 10) > 0);
 	if(n < 0)
 		*--s = '-';
 	return Atom4_new(s, (str + sizeof str) - s);
@@ -107,12 +107,12 @@ int Atom4_length(const char* str) {
 
 	assert(!isBadPtr(str));
 	unsigned long h;
-	int i,len = (int)strlen(str);
+	int i, len = (int)strlen(str);
 	for(h = 0 , i = 0; i < len; i++)
 		h = (h << 1) + scatter[(unsigned char)str[i]];
 	h %= NELEMS(buckets);
 	for(p = buckets[h]; p; p = p->link) {
-	    if(p->str == str)
+		if(p->str == str)
 			return p->len;
 	}
 
@@ -121,14 +121,16 @@ int Atom4_length(const char* str) {
 }
 
 void Atom4_closure(void(*func1)(const int bucketNum, int* cl, int* cl2),
-						void(*func2)(const char* cur, int* cl, int* cl2,int(*Atom_lng)(const char* str)),
-						void(*func3)(const int bucketNum,int* cl, int* cl2),int* cl, int* cl2) {
-	for(int i=0;i < BSIZE; i++){
+						void(*func2)(const char* cur, int* cl, int* cl2,
+							int(*Atom_lng)(const char* str)),
+						void(*func3)(const int bucketNum, int* cl, int* cl2),
+							int* cl, int* cl2) {
+	for(int i = 0; i < BSIZE; i++) {
 		struct atom4 *t = buckets[i];
-		if(func1)func1(i,cl,cl2);
+		if(func1)func1(i, cl, cl2);
 		for(; t; t = t->link) {
-			if(func2)func2(t->str,cl,cl2,Atom4_length);
+			if(func2)func2(t->str, cl, cl2, Atom4_length);
 		}
-		if(func3)func3(i,cl,cl2);
+		if(func3)func3(i, cl, cl2);
 	}
 }

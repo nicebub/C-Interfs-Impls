@@ -13,8 +13,8 @@
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
 #include <stdarg.h>
-#include "atom5.h"
-#include "defines.h"
+#include "include/atom5.h"
+#include "include/defines.h"
 // #include "include/mem.h" for later
 
 // #include "include/assert.h" for later
@@ -25,7 +25,7 @@
 #define NELEMS(x) atomsize
 #define ALLOC(x) malloc((x))
 #define FREE(x) free(*(x)); *(x) = NULL
-//#define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
+// #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
 static int atomsize = 2039;
 static struct atom5 {
 	struct atom5* link;
@@ -36,14 +36,14 @@ static struct atom5 {
 	static unsigned long scatter[256] = {};
 
 void Atom5_fillRandom() {
-	for(int i=0;i<256;i++)
+	for(int i = 0; i < 256; i++)
 		scatter[i] = rand();
 }
 void Atom5_init(const int hint) {
 	assert(hint > 0);
 	assert(buckets == NULL);
 	buckets = ALLOC(sizeof(*buckets)*hint);
-	for(int i=0;i<hint;i++) {
+	for(int i= 0; i < hint; i++) {
 		buckets[i] = NULL;
 	}
 	atomsize = hint;
@@ -65,8 +65,8 @@ const char* Atom5_int(const long n) {
 	else
 		m = n;
 	do
-		*--s = m%10 + '0';
-	while((m /=10) > 0);
+		*--s = m % 10 + '0';
+	while((m /= 10) > 0);
 	if(n < 0)
 		*--s = '-';
 	return Atom5_new(s, (str + sizeof str) - s);
@@ -121,7 +121,7 @@ int Atom5_length(const char* str) {
 	unsigned long h;
 
 	assert(!isBadPtr(str));
-	int i,len = (int)strlen(str);
+	int i, len = (int)strlen(str);
 
 	assert(buckets);
 	for(h = 0 , i = 0; i < len; i++)
@@ -137,16 +137,18 @@ int Atom5_length(const char* str) {
 }
 
 void Atom5_closure(void(*func1)(const int bucketNum, int* cl, int** cl2),
-						void(*func2)(const char* cur, int* cl, int** cl2,int(*Atom_lng)(const char* str)),
-						void(*func3)(const int bucketNum,int* cl, int** cl2),int* cl, int** cl2) {
-	for(int i=0;i < atomsize; i++){
+						void(*func2)(const char* cur, int* cl, int** cl2,
+							int(*Atom_lng)(const char* str)),
+						void(*func3)(const int bucketNum, int* cl, int** cl2),
+							int* cl, int** cl2) {
+	for(int i = 0; i < atomsize; i++) {
 		assert(buckets);
 		struct atom5 *t = buckets[i];
-		if(func1)func1(i,cl,cl2);
+		if(func1)func1(i, cl, cl2);
 		for(; t; t = t->link) {
-			if(func2)func2(t->str,cl,cl2,Atom5_length);
+			if(func2)func2(t->str, cl, cl2, Atom5_length);
 		}
-		if(func3)func3(i,cl,cl2);
+		if(func3)func3(i, cl, cl2);
 	}
 }
 
@@ -155,23 +157,23 @@ void Atom_free(const char * str) {
 	unsigned long h;
 
 	assert(!isBadPtr(str));
-	int i,len = (int)strlen(str);
+	int i, len = (int)strlen(str);
 
 	assert(buckets);
 	for(h = 0 , i = 0; i < len; i++)
 		h = (h << 1) + scatter[(unsigned char)str[i]];
 	h %= NELEMS(buckets);
-    if((p = buckets[h])->str == str){
-	   buckets[h] = p->link;
-	   FREE(&p);
-	   return;
-    }
+	if((p = buckets[h])->str == str) {
+		buckets[h] = p->link;
+		FREE(&p);
+		return;
+	}
 	for(; p->link; p = p->link) {
-	    l = p->link->link;
-	    if(p->link->str == str){
-		   FREE(&p);
-		   p->link = l;
-		   return;
+		l = p->link->link;
+		if(p->link->str == str) {
+			FREE(&p);
+			p->link = l;
+			return;
 	    }
 	}
 
@@ -184,16 +186,16 @@ void Atom_reset(void) {
 	int count = 0;
 	assert(buckets);
 	for(int i = 0; i < NELEMS(buckets); i++)
-		for( p = buckets[i]; p; p = q) {
+		for(p = buckets[i]; p; p = q) {
 			q = p->link;
 			FREE(&p);
 			count++;
 		}
-		fprintf(stderr,"reset %d atoms\n", count);
+		fprintf(stderr, "reset %d atoms\n", count);
 }
 void Atom_vload(const char *str, ...) {
 	va_list ap;
-	va_start(ap,str);
+	va_start(ap, str);
 	assert(str);
 	for(	; str; str = va_arg(ap, const char*)) {
 		Atom5_string(str);
@@ -228,9 +230,9 @@ const char* Atom_add(const char* str, int len) {
 		p->len = len;
 		p->str = (char*)str;
 // 		p->str = (char*)(p + 1);
-		if(len > 0)
-//		memcpy(p->str, str, len);
-//		p->str[len] = '\0';
+// 		if(len > 0)
+// 		memcpy(p->str, str, len);
+// 		p->str[len] = '\0';
 		p->link = buckets[h];
 		buckets[h] = p;
 		return p->str;

@@ -17,6 +17,8 @@ extern const char* Atom_new(const char* str, const int len);
 extern const char* Atom_string(const char* str);
 extern const char* Atom_int(const long n);
 extern void Atom_closure(void(*func1)(const int bucketNum, int* cl, int* cl2),
-						void(*func2)(const char* cur, int* cl, int* cl2,int(*Atom_lng)(const char* str)),
-						void(*func3)(const int bucketNum,int* cl, int* cl2),int* cl, int* cl2);
+						void(*func2)(const char* cur, int* cl, int* cl2,
+						int(*Atom_lng)(const char* str)),
+						void(*func3)(const int bucketNum, int* cl, int* cl2),
+						int* cl, int* cl2);
 #endif  // INCLUDE_ATOM_H_
