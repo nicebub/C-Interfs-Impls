@@ -19,9 +19,12 @@
 #include "atom5.h"
 // #include "mem.h"
 extern int getword(FILE* fp, char *, const int);
-#define MAX_DIST 50
+#define MAX_DIST 10
+
+#define NEW(x) assert((x)); (*(x)) = malloc(sizeof(**(x)));
 #define ALLOC(x) malloc((x))
 #define FREE(x) free(*(x)); *(x) = NULL
+#define REALLOC(x,y) realloc((x),(y))
 
 #define VariableAtomLengthFnDecl int(*Atom_lng)(const char* str)
 #define VariableAtomLengthFn Atom_lng
@@ -34,14 +37,14 @@ extern int getword(FILE* fp, char *, const int);
 
 #define VariableAtomInitFnDecl void (*Atm_init)(const int hint)
 #define VariableAtomInitFn Atm_init
-#define closureFn1Decl void(*func1)(const int bucketNum, int* cl, int* cl2)
+#define closureFn1Decl void(*func1)(const int bucketNum, int* cl, int** cl2)
 #define closureFn1 func1
-#define closureFn2Decl void(*func2)(const char* cur, int* cl, int* cl2,VariableAtomLengthFnDecl)
+#define closureFn2Decl void(*func2)(const char* cur, int* cl, int** cl2,VariableAtomLengthFnDecl)
 #define closureFn2 func2
-#define closureFn3Decl void(*func3)(const int bucketNum,int* cl, int* cl2)
+#define closureFn3Decl void(*func3)(const int bucketNum,int* cl, int** cl2)
 #define closureFn3 func3
 #define VariableAtomClosureFnDecl void (*Atom_clsr)(closureFn1Decl, closureFn2Decl, \
-												closureFn3Decl,int* cl, int* cl2)
+												closureFn3Decl,int* cl, int** cl2)
 #define VariableAtomClosureFn Atom_clsr
 
 #define VariableAtomvloadFnDecl void (*Atm_vload)(const char *str, ...)
@@ -50,118 +53,29 @@ extern int getword(FILE* fp, char *, const int);
 #define VariableAtomaloadFnDecl void (*Atm_aload)(const char * strs[])
 #define VariableAtomaloadFn Atm_aload
 
-//extern struct timeval clock_function(FILE* fp, char*(func)(char*, const char*), int*words);
+#define TIMERHEADER struct timeval time1, time2; \
+	int result; \
+	if( ( (result =  gettimeofday(&time1, NULL)) == -1 ) ) { \
+		fprintf(stderr, "%s\n", strerror(errno)); \
+		exit(EXIT_FAILURE); \
+	}
+
+#define TIMERFOOTER	if( ( (result =  gettimeofday(&time2, NULL)) == -1 ) ) { \
+		fprintf(stderr, "%s\n", strerror(errno)); \
+		exit(EXIT_FAILURE); \
+		} \
+	time2.tv_sec -= time1.tv_sec; \
+	time2.tv_usec -= time1.tv_usec;
+
+#define TIMER time2
+
 void run_timer(FILE* fp, struct timeval seed,VariableAtomFillRandomFnDecl,
 			VariableAtomStringFnDecl, VariableAtomClosureFnDecl,VariableAtomvloadFnDecl,
 			VariableAtomaloadFnDecl);
-
-void beginSum(const int b, int* cl, int* cl2){
-	cl[0] = 0;
-}
-void atomSum(const char* cur, int* cl, int* cl2,VariableAtomLengthFnDecl) {
-	cl[0]++;
-	cl[1]++;
-}
-
-void finishSum(const int b, int* cl, int* cl2) {
-	cl2[cl[0]]++;
-	if(cl[2] < cl[0])
-		cl[2] = cl[0];
-}
-
-void lengthfunc(const char* cur, int* cl, int* cl2,VariableAtomLengthFnDecl) {
-	VariableAtomLengthFn(cur);
-}
-struct timeval cltimerfunc(VariableAtomClosureFnDecl) {
-	struct timeval time1, time2;
-	int result;
-	if( ( (result =  gettimeofday(&time1, NULL)) == -1 ) ) {
-		fprintf(stderr, "%s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-	VariableAtomClosureFn(NULL,lengthfunc,NULL,NULL,NULL);
-	if( ( (result =  gettimeofday(&time2, NULL)) == -1 ) ) {
-		fprintf(stderr, "%s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-	time2.tv_sec -= time1.tv_sec;
-	time2.tv_usec -= time1.tv_usec;
-	return time2;
-}
-
-struct timeval timerfunc(FILE* fp,VariableAtomStringFnDecl) {
-	char word[128];
-	struct timeval time1, time2;
-	int result;
-	if( ( (result =  gettimeofday(&time1, NULL)) == -1 ) ) {
-		fprintf(stderr, "%s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-	while(getword(fp, word, sizeof word)) {
-		VariableAtomStringFn(word);
-	}
-	
-	if( ( (result =  gettimeofday(&time2, NULL)) == -1 ) ) {
-		fprintf(stderr, "%s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-	time2.tv_sec -= time1.tv_sec;
-	time2.tv_usec -= time1.tv_usec;
-	return time2;
-}
 void run_timer_new(FILE* fp, struct timeval seed, long *hint,
-	VariableAtomFillRandomFnDecl, VariableAtomStringFnDecl,
-	VariableAtomClosureFnDecl,VariableAtomInitFnDecl,VariableAtomvloadFnDecl,VariableAtomaloadFnDecl)
-{
-	if(hint)
-		VariableAtomInitFn(*hint);
-	run_timer(fp,seed,VariableAtomFillRandomFn,VariableAtomStringFn,
-			VariableAtomClosureFn,VariableAtomvloadFn,VariableAtomaloadFn);
-}
-
-void run_timer(FILE* fp, struct timeval seed,VariableAtomFillRandomFnDecl,
-						VariableAtomStringFnDecl, VariableAtomClosureFnDecl,
-	VariableAtomvloadFnDecl,VariableAtomaloadFnDecl) {
-	struct timeval time1,time2;
-	int  *sumNwords, dist[MAX_DIST] = {0} ;
-
-	fseek(fp, 0UL, SEEK_SET);
-	srand(seed.tv_sec);
-	VariableAtomFillRandomFn();
-    VariableAtomvloadFn("mad", "about","you", "arrested development", "is", "cool");
-    static const char* my_strings[] = {
-	   "from",
-	   "the",
-	   "array",
-	   "could be already",
-	   "in this",
-	   NULL
-    };
-    VariableAtomaloadFn(my_strings);
-
-	time1 = timerfunc(fp, VariableAtomStringFn);
-	time2 = cltimerfunc(VariableAtomClosureFn);
-	sumNwords = malloc(sizeof *sumNwords * 3);
-	sumNwords[1] = 0;
-	sumNwords[2] = 0;
-	fseek(fp, 0UL, SEEK_SET);
-	VariableAtomClosureFn(beginSum,atomSum,finishSum,sumNwords,(int*)&dist);
-
-	printf("distribution of numbers:\n");
-
-	for(int i=0;i<MAX_DIST;i++)
-		printf("[%d]",i+1);
-	printf("\n");
-
-	for(int i=0;i<MAX_DIST;i++)
-		printf("%d ",dist[i]);
-	printf("\n");
-	printf("Max List Size: %d\n", sumNwords[2]+1);
-	printf("total time for Atom_length on entire: %ld seconds, %d microseconds\n", time2.tv_sec,time2.tv_usec);
-	printf("Atom_string/Atom_new: num word: %d time %ld seconds %d microseconds\n", sumNwords[1],
-				time1.tv_sec , time1.tv_usec);
-	free(sumNwords);
-}
+			VariableAtomFillRandomFnDecl, VariableAtomStringFnDecl,
+			VariableAtomClosureFnDecl,VariableAtomInitFnDecl,
+			VariableAtomvloadFnDecl,VariableAtomaloadFnDecl);
 
 int main(int argc, const char* argv[]) {
 	FILE* fp;
@@ -192,8 +106,113 @@ int main(int argc, const char* argv[]) {
 //		run_timer(fp,seed,Atom3_fillRandom,Atom3_string,Atom3_closure);
 //		run_timer(fp,seed,Atom4_fillRandom,Atom4_string,Atom4_closure);
 		run_timer_new(fp,seed,hint,Atom5_fillRandom,Atom5_string,Atom5_closure,Atom5_init,Atom_vload,Atom_aload);
+		Atom_add("tester bug",strlen("tester bug"));
+		const char* test1 = Atom5_string("your mama");
+		const char* test2 = Atom_add("your mama is still here",strlen("your mama is still here"));
+		Atom_add("fools gold is real gold",strlen("fools gold is real gold"));
+		Atom_free(test1);
+		Atom_free(test2);
+		Atom_reset();
 
 		fclose(fp);
 	}
 	return EXIT_SUCCESS;
+}
+
+void beginSum(const int b, int* cl, int** cl2){
+	cl[0] = 0;
+}
+void atomSum(const char* cur, int* cl, int** cl2,VariableAtomLengthFnDecl) {
+	cl[0]++;
+	cl[1]++;
+}
+
+void finishSum(const int b, int* cl, int** cl2) {
+	while((*cl2)[0] < cl[0]){
+		(*cl2) = REALLOC((*cl2),(*cl2)[0]*2);
+		(*cl2)[0] *= 2;
+	}
+
+	(*cl2)[cl[0]+1]++;
+	if(cl[2] < cl[0])
+		cl[2] = cl[0];
+}
+
+void lengthfunc(const char* cur, int* cl, int** cl2,VariableAtomLengthFnDecl) {
+	VariableAtomLengthFn(cur);
+}
+struct timeval cltimerfunc(VariableAtomClosureFnDecl) {
+	TIMERHEADER
+	VariableAtomClosureFn(NULL,lengthfunc,NULL,NULL,NULL);
+	TIMERFOOTER
+	return TIMER;
+}
+
+struct timeval timerfunc(FILE* fp,VariableAtomStringFnDecl) {
+	char word[128];
+	TIMERHEADER
+	while(getword(fp, word, sizeof word)) {
+		VariableAtomStringFn(word);
+	}
+	TIMERFOOTER
+	return TIMER;
+}
+
+void run_timer_new(FILE* fp, struct timeval seed, long *hint,
+	VariableAtomFillRandomFnDecl, VariableAtomStringFnDecl,
+	VariableAtomClosureFnDecl,VariableAtomInitFnDecl,VariableAtomvloadFnDecl,VariableAtomaloadFnDecl)
+{
+	if(hint)
+		VariableAtomInitFn(*hint);
+	run_timer(fp,seed,VariableAtomFillRandomFn,VariableAtomStringFn,
+			VariableAtomClosureFn,VariableAtomvloadFn,VariableAtomaloadFn);
+}
+
+void run_timer(FILE* fp, struct timeval seed,VariableAtomFillRandomFnDecl,
+						VariableAtomStringFnDecl, VariableAtomClosureFnDecl,
+	VariableAtomvloadFnDecl,VariableAtomaloadFnDecl) {
+	struct timeval time1,time2;
+	int  *sumNwords, *dist ;
+
+	fseek(fp, 0UL, SEEK_SET);
+	srand(seed.tv_sec);
+	VariableAtomFillRandomFn();
+	VariableAtomvloadFn("mad", "about","you", "arrested development", "is", "cool",NULL);
+	static const char* my_strings[] = {
+		"from",
+		"the",
+		"array",
+		"could be already",
+		"in this",
+		NULL
+	};
+	VariableAtomaloadFn(my_strings);
+
+	time1 = timerfunc(fp, VariableAtomStringFn);
+	time2 = cltimerfunc(VariableAtomClosureFn);
+	sumNwords = malloc(sizeof *sumNwords * 3);
+	sumNwords[1] = 0;
+	sumNwords[2] = 0;
+	dist = malloc(sizeof(*dist * MAX_DIST));
+	for(int i =0;i<MAX_DIST;i++)
+		dist[i] = 0;
+		dist[0] = MAX_DIST;
+	fseek(fp, 0UL, SEEK_SET);
+	VariableAtomClosureFn(beginSum,atomSum,finishSum,sumNwords,&dist);
+
+	printf("distribution of numbers:\n");
+
+	for(int i=1;i<=sumNwords[2]+1;i++)
+		printf("[%d]	",i);
+	printf("\n");
+
+	for(int i=1;i<=sumNwords[2]+1;i++)
+		printf("%d	",dist[i]);
+	printf("\n");
+	printf("Max List Size: %d\n", sumNwords[2]+1);
+	printf("total time for Atom_length on entire: %ld seconds, %d microseconds\n", time2.tv_sec,time2.tv_usec);
+	printf("Atom_string/Atom_new: num word: %d time %ld seconds %d microseconds\n", sumNwords[1],
+				time1.tv_sec , time1.tv_usec);
+	free(sumNwords);
+	free(dist);
 }
