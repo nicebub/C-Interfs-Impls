@@ -102,11 +102,11 @@ struct timeval timerfunc(FILE* fp,VariableAtomStringFnDecl) {
 	time2.tv_usec -= time1.tv_usec;
 	return time2;
 }
-void run_timer_new(FILE* fp, struct timeval seed, long hint,
+void run_timer_new(FILE* fp, struct timeval seed, long *hint,
     VariableAtomFillRandomFnDecl, VariableAtomStringFnDecl,
     VariableAtomClosureFnDecl,VariableAtomInitFnDecl)
 {
-    VariableAtomInitFn(hint);
+    if(hint)VariableAtomInitFn(*hint);
     run_timer(fp,seed,Atom5_fillRandom,Atom5_string,Atom5_closure);
 }
 
@@ -147,17 +147,21 @@ int main(int argc, const char* argv[]) {
 	FILE* fp;
 	struct timeval seed;
 	int result;
-	if(argc > 2){
+	if(argc > 1){
 		if((fp = fopen(argv[1], "r") ) == NULL) {
 			fprintf(stderr, "%s\n", strerror(errno) );
 			return EXIT_FAILURE;
 		}
 		argv++;
 		argv++;
-		char * str = ALLOC(sizeof (*str)* strlen(*argv));
-		strcpy(str,*argv);
-		long hint = strtol(str,NULL,10);
-		FREE(&str);
+		long given,*hint = NULL;
+		if(*argv){
+			char * str = ALLOC(sizeof (*str)* strlen(*argv));
+			strcpy(str,*argv);
+			given = strtol(str,NULL,10);
+			FREE(&str);
+			hint = &given;
+		}
 		if( ( (result =  gettimeofday(&seed,NULL)) == -1 ) ) {
 			fprintf(stderr, "%s\n", strerror(errno));
 			exit(EXIT_FAILURE);

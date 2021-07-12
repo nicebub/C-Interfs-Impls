@@ -11,6 +11,12 @@
 
 #include <unistd.h>
 
+extern void Atom_free(const char * str);
+extern void Atom_reset(void);
+extern void Atom_vload(const char *str, ...);
+extern void Atom_aload(const char * strs[]);
+extern const char* Atom_add(const char* str, int len);
+
 extern void Atom5_init(const int hint);
 extern void Atom5_fillRandom(void);
 extern int Atom5_length(const char* sr);
