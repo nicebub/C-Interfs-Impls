@@ -95,7 +95,7 @@ int Atom_length(const char* str) {
 			if(p->str == str)
 				return p->len;
 
-	assert(0);
+	assert(0 && "Not an Atom");
 	return 0;
 }
 

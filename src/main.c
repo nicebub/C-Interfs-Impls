@@ -115,8 +115,12 @@ int main(int argc, const char* argv[]) {
 		Atom_add("fools gold is real gold", strlen("fools gold is real gold"));
 		Atom_free(test1);
 		Atom_free(test2);
+		Atom_free(Atom5_string("mad"));
+		Atom_free(Atom5_string("about"));
+		Atom_free(Atom5_string("you"));
+		Atom_free(Atom5_string("is"));
+		Atom_free(Atom_add("is", strlen("is")));
 		Atom_reset();
-
 		fclose(fp);
 	}
 	return EXIT_SUCCESS;
@@ -133,7 +137,7 @@ void atomSum(const char* cur, int* cl, int** cl2, VariableAtomLengthFnDecl) {
 void finishSum(const int b, int* cl, int** cl2) {
 	while((*cl2)[0] < cl[0]) {
 		(*cl2) = REALLOC((*cl2), (*cl2)[0]*2);
-		(*cl2)[0] *= 2;
+		(*cl2)[0] *= 	2;
 	}
 
 	(*cl2)[cl[0]+1]++;
@@ -205,19 +209,20 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 	VariableAtomClosureFn(beginSum, atomSum, finishSum, sumNwords, &dist);
 
 	printf("distribution of numbers:\n");
-
+	printf("[List Size]	");
 	for(int i = 1; i <= sumNwords[2]+1; i++)
 		printf("[%d]	", i);
 	printf("\n");
-
+	printf("Num of Lists	");
 	for(int i = 1; i <= sumNwords[2]+1; i++)
 		printf("%d	", dist[i]);
 	printf("\n");
-	printf("Max List Size: %d\n", sumNwords[2]+1);
-	printf("total time for Atom_length on entire: %ld seconds, %d microseconds\n",
+// 	printf("Max List Size: %d\n", sumNwords[2]+1);
+	printf("Words added: %d\n", sumNwords[1]);
+	printf("Atom_length on all atoms: %ld seconds, %d microseconds\n",
 		time2.tv_sec, time2.tv_usec);
-	printf("Atom_string/Atom_new: num word: %d time %ld seconds %d microseconds\n",
-		sumNwords[1], time1.tv_sec , time1.tv_usec);
+	printf("Atom_string/Atom_new:  time %ld seconds %d microseconds\n",
+		time1.tv_sec , time1.tv_usec);
 	free(sumNwords);
 	free(dist);
 }

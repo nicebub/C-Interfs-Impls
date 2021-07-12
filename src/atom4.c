@@ -97,7 +97,7 @@ int Atom4_oldlength(const char* str) {
 			if(p->str == str)
 				return p->len;
 
-	assert(0);
+	assert(0 && "Not an Atom");
 	return 0;
 }
 
@@ -116,7 +116,7 @@ int Atom4_length(const char* str) {
 			return p->len;
 	}
 
-	assert(0);
+	assert(0 && "Not an Atom");
 	return 0;
 }
 
