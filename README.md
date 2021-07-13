@@ -14,10 +14,25 @@ Programs of code , dotProduct and the 2 distinct strcpy methods were implemented
 #	- Chapter 2 -
 
 Program arith.c has 4 arithmetic functions that have been extended per the exercises
+
 -13/5 == -2 is volatile so it is computed at runtime and not compile time, even with 
+
 optimization flags -O0, O1, -O2, -O3, -Os
 
 Program stack.c implements stack.h with extensions including peek() and newWithSize(int)
 
 isBadPtr(p) macro defined but simply checks for NULL for now
 
+# - Chapter 3 -
+
+Atom implentation and interface added.
+
+`atom5.c` and `atom5.h` hold most current version with all exercise functions added
+
+Inside the build directory, the executable created is `bin`
+
+bin takes 2 arguments, the last argument is optional
+
+1st argument is the filename to open, if no filename is given then the executable quits.
+
+2nd argument is a hint of words that may be read and used to determine how many buckets use.  
