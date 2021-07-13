@@ -40,7 +40,7 @@ void Atom5_fillRandom() {
 }
 void Atom5_init(const int hint) {
 	assert(hint > 0);
-	assert(!buckets && "buckets already allocated");
+	assert((buckets == NULL)  && "buckets already allocated");
 	buckets = ALLOC(sizeof(*buckets)*hint);
     if(!buckets) {
 	   fprintf(stderr, "cannot allocate memory in Atom5_init\n");
@@ -113,7 +113,7 @@ int Atom5_oldlength(const char* str) {
 			if(p->str == str)
 				return p->len;
 
-	assert(0 && "Not an Atom");
+	assert(!"Not an Atom");
 	return 0;
 }
 
@@ -133,7 +133,7 @@ int Atom5_length(const char* str) {
 			return p->len;
 	}
 
-	assert(0 && "Not an Atom");
+	assert(!"Not an Atom");
 	return 0;
 }
 
@@ -179,7 +179,7 @@ void Atom_free(const char * str) {
 		}
 	}
 
-	assert(0 && "Atom not found or not an Atom");
+	assert(!"Atom not found or not an Atom");
 }
 
 
