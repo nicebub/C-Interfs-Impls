@@ -40,35 +40,35 @@ void Except_raise(const T *e, const char *file, int line);
 #define RETURN switch (Except_stack = Except_stack->prev, 0) default : return
 
 #define TRY do {\
-	volatile in Except_flag;\
+	volatile int Except_flag;\
 	Except_Frame Except_frame;\
 	Except_frame.prev = Except_stack;\
 	Except_stack = Except_frame;\
 	Except_flag = setjmp(Except_frame.env);\
 	if((Except_flag == Except_entered) {
 
-#define EXCEPT(e) \
+#define CATCH(e) \
 if(Except_flag == Except_entered)\
-	Except_stack = Except_stack->prev\
+	Except_stack = Except_stack->prev;\
 } else if (Except_frame.exception == &(e)) {\
 	Except_flag = Except_handled;
 
 #define ELSE \
-} else if (Except_frame.exception == &(e)) {\
-	Except_flag = Except_handled;\
+if(Except_flag == Except_entered)\
+	Except_stack = Except_stack->prev;\
 	} else { \
 		Except_flag = Except_handled;
 
 #define FINALLY \
-} else if (Except_frame.exception == &(e)) {\
-	Except_flag = Except_handled;\
+if(Except_flag == Except_entered)\
+	Except_stack = Except_stack->prev;\
 	} { \
 		if(Except_flag == Except_entered)\
 		Except_flag = Except_finalized;
 
 #define END_TRY \
-} else if (Except_frame.exception == &(e)) {\
-	Except_flag = Except_handled;\
+if(Except_flag == Except_entered)\
+	Except_stack = Except_stack->prev;\
 	} if (Except_flag == Except_raised) RERAISE;\
 	} while(0)
 

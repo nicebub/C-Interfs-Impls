@@ -8,8 +8,8 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <assert.h>
-//  #include "include/assert.h" for later
+//#include <assert.h>
+  #include "include/assert.h"
 //  #include "include/mem.h" for later
 #include "include/stack.h"
 #include "include/defines.h"

@@ -8,16 +8,16 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <assert.h>
+//#include <assert.h>
 #include <string.h>
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
 #include <stdarg.h>
 #include "include/atom5.h"
 #include "include/defines.h"
+#include "include/assert.h"
 // #include "include/mem.h" for later
 
-// #include "include/assert.h" for later
 // INCLUDES BEST VERSION OF ATOM_LENGTH
 
 #define CHAR_LEN 43

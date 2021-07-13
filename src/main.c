@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include "include/assert.h"
 #include "include/atom.h"
 #include "include/atom2.h"
 #include "include/atom3.h"

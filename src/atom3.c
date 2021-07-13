@@ -9,15 +9,15 @@
 // in Atom_new, negligible changes from this in time except sometimes
 // on my cpu it seems to take twice as long
 #include <unistd.h>
-#include <assert.h>
+//#include <assert.h>
 #include <string.h>
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
 #include "include/atom3.h"
 #include "include/defines.h"
+#include "include/assert.h"
 // #include "include/mem.h" for later
 
-// #include "include/assert.h" for later
 #define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
 

@@ -7,15 +7,15 @@
 // the std gnu2x
 
 #include <unistd.h>
-#include <assert.h>
+//#include <assert.h>
 #include <string.h>
 #include <stdlib.h>  // for NULL
 #include <limits.h>  // for LONG_MAX _MIN
 #include "include/atom4.h"
 #include "include/defines.h"
+#include "include/assert.h"
 // #include "include/mem.h" for later
 
-// #include "include/assert.h" for later
 // INCLUDES BEST VERSION OF ATOM_LENGTH
 
 #define BSIZE 2039

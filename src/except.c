@@ -22,12 +22,12 @@ void Except_raise(const T *e, const char *file,
 		
 		assert(e);
 		if(p == NULL) {
-			fprintf(stderr, "Uncaugt exception");
+			fprintf(stderr, "Uncaught exception");
 			if(e->reason)
 				fprintf(stderr, " %s", e->reason);
 			else
 				fprintf(stderr, " at 0x%p", e);
-				if(file && line > 0)
+			if(file && line > 0)
 				fprintf(stderr, " raised at %s:%d\n", file, line);
 			fprintf(stderr, "aborting...\n");
 			fflush(stderr);
