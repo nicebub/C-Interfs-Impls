@@ -22,7 +22,7 @@ extern const Except_T Mem_Failed;// = { "Cannot Allocate Memory" };
 
 #define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
-#define ALLOC(x) malloc((x))
+//#define ALLOC(x) malloc((x))
 
 static struct atom2 {
 	struct atom2* link;
@@ -78,7 +78,7 @@ const char* Atom2_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len);
-		if(p == NULL) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed);
 		p->len = len;
 		if(len > 0)
 		memcpy(p->str, str, len);

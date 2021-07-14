@@ -40,6 +40,8 @@ void Except_raise(const T *e, const char *file,
 			p->file = file;
 			p->line = line;
 			for(;Except_stack != NULL && !Except_stack->finally;Except_stack = Except_stack->prev) {
+					fprintf(stderr, "called from %s at %s:%d\n",Except_stack->file,
+					Except_stack->file,Except_stack->line);
 			}
 		}
 		if(Except_stack == NULL){ 
@@ -49,7 +51,7 @@ void Except_raise(const T *e, const char *file,
 			else
 				fprintf(stderr, " at 0x%p", e);
 			if(file && line > 0)
-				fprintf(stderr, " raised at %s:%d\n", file, line);
+				fprintf(stderr, " raised in %s at %s:%d\n", file, file, line);
 			fprintf(stderr, "aborting...\n");
 			fflush(stderr);
 			abort();

@@ -16,6 +16,7 @@
 #include "include/atom5.h"
 #include "include/defines.h"
 #include "include/assert.h"
+#include "include/except.h"
 // #include "include/mem.h" for later
 
 // INCLUDES BEST VERSION OF ATOM_LENGTH
@@ -23,8 +24,6 @@
 #define CHAR_LEN 43
 #define BSIZE 2039
 #define NELEMS(x) atomsize
-#define ALLOC(x) malloc((x))
-#define FREE(x) free(*(x)); *(x) = NULL
 
 extern const Except_T Mem_Failed;// = { "Cannot Allocate Memory" };
 
@@ -45,10 +44,12 @@ void Atom5_init(const long hint) {
 	assert(hint > 0 || !"hint can't be less than 0");
 	assert((isBadPtr(buckets)) || !"buckets already allocated");
 	buckets = ALLOC(sizeof(*buckets)*hint);
+    if(isBadPtr(buckets)) THROW(Mem_Failed);
+    /*
     if(!buckets) {
 	   fprintf(stderr, "cannot allocate memory in Atom5_init\n");
 	   exit(EXIT_FAILURE);
-    }
+    }*/
 	for(long i = 0; i < hint; i++) {
 		buckets[i] = NULL;
 	}
@@ -97,7 +98,7 @@ const char* Atom5_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len + 1);
-		if(p == NULL) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed);
 		p->len = len;
 		p->str = (char*)(p + 1);
 	   p->link = NULL;
@@ -232,7 +233,7 @@ const char* Atom_add(const char* str, int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p));
-		if(p == NULL) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed);
 		p->len = len;
 		p->str = (char*)str;
 	   p->link = NULL;

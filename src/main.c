@@ -24,10 +24,6 @@
 extern int getword(FILE* fp, char *, const int);
 #define MAX_DIST 10
 
-#define NEW(x) assert((x)); (*(x)) = malloc(sizeof(**(x)));
-#define ALLOC(x) malloc((x))
-#define FREE(x) free(*(x)); *(x) = NULL
-#define REALLOC(x, y) reallocf((x), (y))
 
 #define VariableAtomLengthFnDecl int(*Atom_lng)(const char* str)
 #define VariableAtomLengthFn Atom_lng
@@ -93,10 +89,10 @@ void run_timer_new(FILE* fp, struct timeval seed, long *hint,
 
 int main(int argc, const char* argv[]) {
 	FILE* fp;
-	struct timeval seed;
+    struct timeval seed= {0};
 	int result;
 	if(argc > 1) {
-		long given, *hint = NULL;
+		long given=0, *hint = NULL;
 
 		fp = fopen(argv[1], "r");
 		TRY
@@ -169,11 +165,12 @@ void finishSum(const long b, long* cl, long** cl2) {
 	assert(!isBadPtr(cl));
 	assert(!isBadPtr(cl2) && !isBadPtr(*cl2));
 	while((*cl2)[0] < cl[0]) {
-		(*cl2) = REALLOC((*cl2), (*cl2)[0]*2);
+		(*cl2) = REALLOC((*cl2), sizeof((**cl2))*(*cl2)[0]*2);
+	    strerror(errno);
 	    if((*cl2) == NULL)
 		   assert(0);
 		assert(!isBadPtr(*cl2));
-		for(long i = (*cl2)[0]; i<(*cl2)[0]*2;i++)
+		for(long i = (*cl2)[0]; i<((*cl2)[0]*2);i++)
 		(*cl2)[i] = 0;
 		(*cl2)[0] *= 	2;
 	}
@@ -181,6 +178,7 @@ void finishSum(const long b, long* cl, long** cl2) {
 	(*cl2)[cl[0]+1]++;
 	if(cl[2] < cl[0])
 		cl[2] = cl[0];
+//		THROW(Assert_Failed);
 }
 
 void lengthfunc(const char* cur, long* cl, long** cl2, VariableAtomLengthFnDecl) {
@@ -253,10 +251,10 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 
 	time1 = timerfunc(fp, VariableAtomStringFn);
 	time2 = cltimerfunc(VariableAtomClosureFn);
-	sumNwords = ALLOC(sizeof *sumNwords * 3);
+	sumNwords = ALLOC(sizeof(*sumNwords) * 3);
 
 	assert(!isBadPtr(sumNwords));
-
+    sumNwords[0] = 0;
 	sumNwords[1] = 0;
 	sumNwords[2] = 0;
 	dist = ALLOC(sizeof(*dist) * MAX_DIST);

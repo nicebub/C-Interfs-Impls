@@ -14,7 +14,7 @@
 #include "include/stack.h"
 #include "include/defines.h"
 #define MAGIC_ID 999
-#define NEW(x) x = malloc(sizeof(*(x)))
+//#define NEW(x) x = malloc(sizeof(*(x)))
 
 extern const Except_T Mem_Failed;// = { "Cannot Allocate Memory" };
 
@@ -59,7 +59,7 @@ void Stack_push(T stack, void* x) {
 
 	assert(!isBadPtr(stack) && (stack->id == MAGIC_ID));
 	NEW(t);
-	if(t == NULL) THROW(Mem_Failed);
+	if(isBadPtr(t)) THROW(Mem_Failed);
 	t->x = x;
 	t->link = stack->head;
 	stack->head = t;
@@ -70,7 +70,7 @@ void* Stack_peek(T stack) {
 	assert(stack->count > 0);
 	return stack->head->x;
 }
-#define FREE(x) free((x))
+//#define FREE(x) free((x))
 void* Stack_pop(T stack) {
 	void* x;
 	struct elem*  t;
@@ -80,7 +80,7 @@ void* Stack_pop(T stack) {
 	stack->head = t->link;
 	stack->count--;
 	x = t->x;
-	FREE(t);
+	FREE(&t);
 	return x;
 }
 
@@ -89,9 +89,9 @@ void Stack_free(T* stack) {
 	assert(!isBadPtr(stack) && !isBadPtr(*stack) && ((*stack)->id == MAGIC_ID));
 	for( t = (*stack)->head; t; t = u ) {
 		u = t->link;
-		FREE(t);
+		FREE(&t);
 	}
-	FREE(*stack);
+	FREE(&stack);
 }
 #undef T
 #undef MAGIC_ID
