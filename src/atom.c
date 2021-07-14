@@ -15,7 +15,7 @@
 #include "include/assert.h"
 #include "include/mem.h"
 
-extern const Except_T Mem_Failed;  // = { "Cannot Allocate Memory" };
+extern const Except_T Mem_Failed;  	// = { "Cannot Allocate Memory" };
 
 #define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))

@@ -34,7 +34,8 @@ HDR_STRIP := $(subst ./,,$(wildcard ${HDRDIR}/${HFILES}))
 
 OBJS := $(patsubst ${SRCDIR}/%,%,$(subst .c,.o, $(SRC)))
 FULLOBJS := $(patsubst %,${FULLOBJDIR}/%,${OBJS})
-DEBUG = -g -Wall
+#DEBUG = -g -Wall
+DEBUG = -DNDEBUG
 CC = `which gcc`
 BINARY = bin
 EXEC = ${BUILDDIR}/${BINARY}

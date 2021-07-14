@@ -53,7 +53,10 @@ long** cl2, VariableAtomLengthFnDecl)
 
 #define VariableAtomaloadFnDecl void (*Atm_aload)(const char * strs[])
 #define VariableAtomaloadFn Atm_aload
-
+#ifdef NDEBUG
+const Except_T Assert_Failed = { "Assertion Failed" };
+//#define Assert_Failed 0
+#endif
 #define TBLOCK TRY\
 		assert(result >=0);\
 	CATCH(Assert_Failed){\
@@ -98,6 +101,7 @@ int main(int argc, const char* argv[]) {
 		fp = fopen(argv[1], "r");
 		TRY
 			assert(!isBadPtr(fp));
+			if(isBadPtr(fp)) THROW(Assert_Failed);
 		CATCH(Assert_Failed){
 			fprintf(stderr, "%s\n", strerror(errno) );
 			return EXIT_FAILURE;
@@ -227,7 +231,7 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 						VariableAtomStringFnDecl, VariableAtomClosureFnDecl,
 	VariableAtomvloadFnDecl, VariableAtomaloadFnDecl) {
 	struct timeval time1, time2;
-	long  *sumNwords, *dist;
+	long  sumNwords[3], *dist;
 	assert(!isBadPtr(fp));
 	assert(!isBadPtr(VariableAtomFillRandomFn));
 	assert(!isBadPtr(VariableAtomStringFn));
@@ -252,7 +256,7 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 
 	time1 = timerfunc(fp, VariableAtomStringFn);
 	time2 = cltimerfunc(VariableAtomClosureFn);
-	sumNwords = ALLOC(sizeof(*sumNwords) * 3);
+//	sumNwords = ALLOC(sizeof(*sumNwords) * 3);
 
 	assert(!isBadPtr(sumNwords));
     sumNwords[0] = 0;
@@ -282,6 +286,6 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 		time2.tv_sec, time2.tv_usec);
 	printf("Atom_string/Atom_new:  time %ld seconds %d microseconds\n",
 		time1.tv_sec , time1.tv_usec);
-	free(sumNwords);
-	free(dist);
+//	FREE(sumNwords);
+	FREE(dist);
 }

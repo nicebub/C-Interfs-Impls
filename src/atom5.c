@@ -42,6 +42,7 @@ void Atom5_fillRandom() {
 }
 void Atom5_init(const long hint) {
 	assert(hint > 0 || !"hint can't be less than 0");
+	if(hint <= 0) THROW(Assert_Failed);
 	assert((isBadPtr(buckets)) || !"buckets already allocated");
 	buckets = ALLOC(sizeof(*buckets)*hint);
     if(isBadPtr(buckets)) THROW(Mem_Failed);

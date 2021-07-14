@@ -39,7 +39,9 @@ void Except_raise(const T *e, const char *file,
 			p->exception = e;
 			p->file = file;
 			p->line = line;
-			for(;Except_stack != NULL && !Except_stack->finally;Except_stack = Except_stack->prev) {
+			for(;Except_stack != NULL &&
+			    Except_stack->exception != p->exception
+			    && !Except_stack->finally;Except_stack = Except_stack->prev) {
 					fprintf(stderr, "called from %s at %s:%d\n",Except_stack->file,
 					Except_stack->file,Except_stack->line);
 			}
