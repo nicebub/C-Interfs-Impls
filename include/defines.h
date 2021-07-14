@@ -9,6 +9,6 @@
 #ifndef INCLUDE_DEFINES_H_
 #define INCLUDE_DEFINES_H_
 
-#define isBadPtr(p) ((p) == NULL) ? 1 : 0
+#define isBadPtr(p) (((p) == NULL) ? 1 : 0 || !"NULL POINTER")
 
 #endif  // INCLUDE_DEFINES_H_

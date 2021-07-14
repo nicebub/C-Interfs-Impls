@@ -21,7 +21,28 @@ void Except_raise(const T *e, const char *file,
 		Except_Frame *p = Except_stack;
 		
 		assert(e);
-		if(p == NULL) {
+		if(Except_stack == NULL) {
+			/*
+			fprintf(stderr, "Uncaught exception");
+			if(e->reason)
+				fprintf(stderr, " %s", e->reason);
+			else
+				fprintf(stderr, " at 0x%p", e);
+			if(file && line > 0)
+				fprintf(stderr, " raised at %s:%d\n", file, line);
+			fprintf(stderr, "aborting...\n");
+			fflush(stderr);
+			abort();
+			*/
+		}
+		else{
+			p->exception = e;
+			p->file = file;
+			p->line = line;
+			for(;Except_stack != NULL && !Except_stack->finally;Except_stack = Except_stack->prev) {
+			}
+		}
+		if(Except_stack == NULL){ 
 			fprintf(stderr, "Uncaught exception");
 			if(e->reason)
 				fprintf(stderr, " %s", e->reason);
@@ -33,9 +54,6 @@ void Except_raise(const T *e, const char *file,
 			fflush(stderr);
 			abort();
 		}
-		p->exception = e;
-		p->file = file;
-		p->line = line;
-		Except_stack = Except_stack->prev;
+//		Except_stack = Except_stack->prev;
 		longjmp(p->env, Except_raised);
 	}

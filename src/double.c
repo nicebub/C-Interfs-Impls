@@ -11,6 +11,8 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
+#include "include/assert.h"
+#include "include/defines.h"
 int linenum;
 
 int getword(FILE* fp, char *, const int);
@@ -34,7 +36,8 @@ int main(int argc, const char* argv[]) {
 */
 int getword(FILE* fp, char* buf, const int size) {
 	int c;
-
+	assert(!isBadPtr(fp) || !"File Pointer Invalid");
+	assert(!isBadPtr(buf));
 	c = getc(fp);
 	for( ; c != EOF && isspace(c); c=getc(fp))
 		if( c == '\n' )
@@ -55,6 +58,9 @@ int getword(FILE* fp, char* buf, const int size) {
 void doubleword(const char * name, FILE* fp) {
 	char prev[128], word[128];
 
+	assert(!isBadPtr(fp) || !"File Pointer Invalid");
+	assert(!isBadPtr(name));
+	
 	linenum = 1;
 	prev[0]= '\0';
 	while(getword(fp, word, sizeof word)) {

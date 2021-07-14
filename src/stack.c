@@ -14,6 +14,9 @@
 #include "include/stack.h"
 #include "include/defines.h"
 #define MAGIC_ID 999
+#define NEW(x) x = malloc(sizeof(*(x)))
+
+extern const Except_T Mem_Failed;// = { "Cannot Allocate Memory" };
 
 #define T Stack_T
 struct T {
@@ -25,10 +28,10 @@ struct T {
 		} *head;
 };
 
-#define NEW(x) x = malloc(sizeof(*(x)))
 T Stack_new(void) {
 	T stack;
 	NEW(stack);
+	if(stack == NULL) THROW(Mem_Failed);
 	stack->count = 0;
 	stack->head = NULL;
 	stack->id = MAGIC_ID;
@@ -56,6 +59,7 @@ void Stack_push(T stack, void* x) {
 
 	assert(!isBadPtr(stack) && (stack->id == MAGIC_ID));
 	NEW(t);
+	if(t == NULL) THROW(Mem_Failed);
 	t->x = x;
 	t->link = stack->head;
 	stack->head = t;

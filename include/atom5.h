@@ -17,15 +17,15 @@ extern void Atom_vload(const char *str, ...);
 extern void Atom_aload(const char * strs[]);
 extern const char* Atom_add(const char* str, int len);
 
-extern void Atom5_init(const int hint);
+extern void Atom5_init(const long hint);
 extern void Atom5_fillRandom(void);
 extern int Atom5_length(const char* sr);
 extern const char* Atom5_new(const char* str, const int len);
 extern const char* Atom5_string(const char* str);
 extern const char* Atom5_int(const long n);
-extern void Atom5_closure(void(*func1)(const int bucketNum, int* cl, int** cl2),
-						void(*func2)(const char* cur, int* cl, int** cl2,
+extern void Atom5_closure(void(*func1)(const long bucketNum, long* cl, long** cl2),
+						void(*func2)(const char* cur, long* cl, long** cl2,
 						int(*Atom_lng)(const char* str)),
-						void(*func3)(const int bucketNum, int* cl, int** cl2),
-						int* cl, int** cl2);
+						void(*func3)(const long bucketNum, long* cl, long** cl2),
+					 long* cl, long** cl2);
 #endif  // INCLUDE_ATOM5_H_

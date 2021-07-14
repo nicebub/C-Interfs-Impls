@@ -18,8 +18,11 @@
 #include "include/assert.h"
 // #include "include/mem.h" for later
 
+extern const Except_T Mem_Failed;// = { "Cannot Allocate Memory" };
+
 #define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
+#define ALLOC(x) malloc((x))
 
 static struct atom3 {
 	struct atom3* link;
@@ -58,7 +61,6 @@ const char* Atom3_int(const long n) {
 		*--s = '-';
 	return Atom3_new(s, (int)((str + sizeof str) - s));
 }
-
 const char* Atom3_new(const char* str, const int len) {
 	unsigned long h, oh;
 	int i;
@@ -73,18 +75,11 @@ const char* Atom3_new(const char* str, const int len) {
 	for(p = buckets[h]; p; p = p->link) {
 		if(oh == p->h)
 			return p->str;
-			/*
-		if(len == p->len) {
-			for(i = 0; i< len && p->str[i] == str[i]; i++) {}
-			if(i == len)
-				return p->str;
-		}*/
 	}
-	#define ALLOC(x) malloc((x))
 		p = ALLOC(sizeof (*p) + len + 1);
+		if(p == NULL) THROW(Mem_Failed);
 		p->len = len;
 		p->str = (char*)(p + 1);
-// 		p->str = (char*)(p + 1);
 		if(len > 0)
 		memcpy(p->str, str, len);
 		p->str[len] = '\0';
@@ -112,6 +107,7 @@ void Atom3_closure(void(*func1)(const int bucketNum, int* cl, int* cl2),
 							int(*Atom_lng)(const char* str)),
 						void(*func3)(const int bucketNum, int* cl, int* cl2),
 							int* cl, int* cl2) {
+	assert(!isBadPtr(buckets) || !"buckets not initialized");
 	for(int i = 0; i < BSIZE; i++) {
 		struct atom3 *t = buckets[i];
 		if(func1)func1(i, cl, cl2);

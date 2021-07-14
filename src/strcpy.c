@@ -11,6 +11,9 @@
 #include <stdio.h>  // for fprintf
 #include <errno.h>  // for errno
 #include <string.h>  // for strerror()
+#include "include/except.h"
+#include "include/assert.h"
+#include "include/defines.h"
 
 extern int getword(FILE* fp, char *, const int);
 
@@ -21,6 +24,7 @@ char* strcpy_b(char *dst, const char* src);
 
 char *strcpy_a(char dst[], const char src[]) {
 	int i = 0;
+	
 	for( ; src[i] != '\0'; i++)
 		dst[i] = src[i];
 	dst[i] = '\0';
@@ -28,6 +32,7 @@ char *strcpy_a(char dst[], const char src[]) {
 }
 
 char* strcpy_b(char *dst, const char* src) {
+	assert(!isBadPtr(dst) && !isBadPtr(src));
 	char* s = dst;
 	while((*dst++ = *src++) != '\0') {}
 	return s;
@@ -38,21 +43,34 @@ struct timeval clock_function(FILE* fp, char*(strcpy_f)(char*, const char*),
 												int* words) {
 	char word[128], extra[128];
 	struct timeval time1, time2;
-	struct timezone zone;
+//	struct timezone zone;
 	int result;
+	assert(!isBadPtr(fp) || !"File Pointer NULL");
+	assert(!isBadPtr(strcpy_f) || "Null Function given");
+	assert(!isBadPtr(words));
+
 	*words = 0;
-	if( ( (result =  gettimeofday(&time1, &zone)) == -1 ) ) {
+	result =  gettimeofday(&time1, NULL);
+	assert(result >=0 || !strerror(errno));
+	/*
+	
+	if( ( (result =  gettimeofday(&time1, NULL)) == -1 ) ) {
 		fprintf(stderr, "%s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
+	*/
 	while(getword(fp, word, sizeof word)) {
 		strcpy_f(extra, word);
 		(*words)++;
 	}
-	if( ( (result =  gettimeofday(&time2, &zone)) == -1 ) ) {
+	result =  gettimeofday(&time2, NULL);
+	assert(result >=0 || !strerror(errno));
+	/*
+	if( ( (result =  gettimeofday(&time2, NULL)) == -1 ) ) {
 		fprintf(stderr, "%s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
+	*/
 	time2.tv_sec -= time1.tv_sec;
 	time2.tv_usec -= time1.tv_usec;
 	return time2;

@@ -25,7 +25,10 @@
 #define NELEMS(x) atomsize
 #define ALLOC(x) malloc((x))
 #define FREE(x) free(*(x)); *(x) = NULL
-static int atomsize = 2039;
+
+extern const Except_T Mem_Failed;// = { "Cannot Allocate Memory" };
+
+static long atomsize = 2039;
 static struct atom5 {
 	struct atom5* link;
 	int len;
@@ -38,15 +41,15 @@ void Atom5_fillRandom() {
 	for(int i = 0; i < 256; i++)
 		scatter[i] = rand();
 }
-void Atom5_init(const int hint) {
-	assert(hint > 0);
-	assert((buckets == NULL)  && "buckets already allocated");
+void Atom5_init(const long hint) {
+	assert(hint > 0 || !"hint can't be less than 0");
+	assert((isBadPtr(buckets)) || !"buckets already allocated");
 	buckets = ALLOC(sizeof(*buckets)*hint);
     if(!buckets) {
 	   fprintf(stderr, "cannot allocate memory in Atom5_init\n");
 	   exit(EXIT_FAILURE);
     }
-	for(int i = 0; i < hint; i++) {
+	for(long i = 0; i < hint; i++) {
 		buckets[i] = NULL;
 	}
 	atomsize = hint;
@@ -94,10 +97,12 @@ const char* Atom5_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len + 1);
+		if(p == NULL) THROW(Mem_Failed);
 		p->len = len;
 		p->str = (char*)(p + 1);
+	   p->link = NULL;
 		if(len > 0)
-		    memcpy(p->str, str, len);
+			memcpy(p->str, str, len);  // SHOULD ADD CHECK FOR OVERLAP??
 		p->str[len] = '\0';
 		p->link = buckets[h];
 		buckets[h] = p;
@@ -107,8 +112,8 @@ int Atom5_oldlength(const char* str) {
 	struct atom5* p;
 
 	assert(!isBadPtr(str));
-	assert(buckets  && "buckets not allocated");
-	for(int i = 0; i < NELEMS(buckets); i++)
+	assert(!isBadPtr(buckets) || !"buckets not allocated");
+	for(long i = 0; i < NELEMS(buckets); i++)
 		for( p = buckets[i]; p; p = p->link)
 			if(p->str == str)
 				return p->len;
@@ -122,9 +127,9 @@ int Atom5_length(const char* str) {
 	unsigned long h;
 
 	assert(!isBadPtr(str));
-	int i, len = (int)strlen(str);
+	int i,  len = (int)strlen(str);
 
-	assert(buckets  && "buckets not allocated");
+	assert(!isBadPtr(buckets) || !"buckets not allocated");
 	for(h = 0 , i = 0; i < len; i++)
 		h = (h << 1) + scatter[(unsigned char)str[i]];
 	h %= NELEMS(buckets);
@@ -137,13 +142,13 @@ int Atom5_length(const char* str) {
 	return 0;
 }
 
-void Atom5_closure(void(*func1)(const int bucketNum, int* cl, int** cl2),
-						void(*func2)(const char* cur, int* cl, int** cl2,
+void Atom5_closure(void(*func1)(const long bucketNum, long* cl, long** cl2),
+						void(*func2)(const char* cur, long* cl, long** cl2,
 							int(*Atom_lng)(const char* str)),
-						void(*func3)(const int bucketNum, int* cl, int** cl2),
-							int* cl, int** cl2) {
-	for(int i = 0; i < atomsize; i++) {
-		assert(buckets && "buckets not allocated");
+						void(*func3)(const long bucketNum, long* cl, long** cl2),
+			    long* cl, long** cl2) {
+	assert(!isBadPtr(buckets) || !"buckets not allocated");
+	for(long i = 0; i < atomsize; i++) {
 		struct atom5 *t = buckets[i];
 		if(func1)func1(i, cl, cl2);
 		for(; t; t = t->link) {
@@ -160,7 +165,7 @@ void Atom_free(const char * str) {
 	assert(!isBadPtr(str));
 	int i, len = (int)strlen(str);
 
-	assert(buckets && "buckets not allocated");
+	assert(!isBadPtr(buckets) || !"buckets not allocated");
 	for(h = 0 , i = 0; i < len; i++)
 		h = (h << 1) + scatter[(unsigned char)str[i]];
 	h %= NELEMS(buckets);
@@ -173,6 +178,7 @@ void Atom_free(const char * str) {
 	for(; p->link; p = p->link) {
 		l = p->link->link;
 		if(p->link->str == str) {
+		    p->link->link = NULL;
 			FREE(&p->link);
 			p->link = l;
 			return;
@@ -185,24 +191,25 @@ void Atom_free(const char * str) {
 
 void Atom_reset(void) {
 	struct atom5 *p, *q;
-	assert(buckets && "buckets not allocated");
+	assert(!isBadPtr(buckets) || !"buckets not allocated");
 	for(int i = 0; i < NELEMS(buckets); i++)
 		for(p = buckets[i]; p; p = q) {
 			q = p->link;
+		    p->link = NULL;
 			FREE(&p);
 		}
 }
 void Atom_vload(const char *str, ...) {
 	va_list ap;
 	va_start(ap, str);
-	assert(str && "NULL string");
+	assert(!isBadPtr(str)/* || !"NULL string"*/);
 	for(	; str; str = va_arg(ap, const char*)) {
 		Atom5_string(str);
 	}
 	va_end(ap);
 }
 void Atom_aload(const char * strs[]) {
-	assert(strs && "NULL array");
+	assert(!isBadPtr(strs)/* || !"NULL array"*/);
 	while(*strs)
 		Atom5_string(*strs++);
 }
@@ -225,8 +232,10 @@ const char* Atom_add(const char* str, int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p));
+		if(p == NULL) THROW(Mem_Failed);
 		p->len = len;
 		p->str = (char*)str;
+	   p->link = NULL;
 		p->link = buckets[h];
 		buckets[h] = p;
 		return p->str;
