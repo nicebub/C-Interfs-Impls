@@ -36,3 +36,27 @@ bin takes 2 arguments, the last argument is optional
 1st argument is the filename to open, if no filename is given then the executable quits.
 
 2nd argument is a hint of words that may be read and used to determine how many buckets use.  
+
+# - chapter 4 -
+
+C Exceptions and Assertions
+Implemented the C Exception Interface of:
+
+TRY
+CATCH(e)
+CATCH(e)
+.
+.
+.
+
+CATCH(e)
+ELSE(e)
+FINALLY(e)
+END_TRY
+
+assert inerface with an assert exception thrown
+
+I'm still working on this. I would like to add Stack Traces, Open to debugger
+and I need to
+
+test whether the 1 longjmp version works.
