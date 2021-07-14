@@ -57,7 +57,7 @@ long** cl2, VariableAtomLengthFnDecl)
 const Except_T Assert_Failed = { "Assertion Failed" };
 //#define Assert_Failed 0
 #endif
-#define TBLOCK TRY\
+#define TBLOCK TRY("main()")\
 		assert(result >=0);\
 	CATCH(Assert_Failed){\
 		fprintf(stderr, "%s\n", strerror(errno)); \
@@ -99,9 +99,9 @@ int main(int argc, const char* argv[]) {
 		long given=0, *hint = NULL;
 
 		fp = fopen(argv[1], "r");
-		TRY
-			assert(!isBadPtr(fp));
-			if(isBadPtr(fp)) THROW(Assert_Failed);
+		TRY("main()")
+//			assert(!isBadPtr(fp));
+			if(isBadPtr(fp)) THROW(Assert_Failed,"main()");
 		CATCH(Assert_Failed){
 			fprintf(stderr, "%s\n", strerror(errno) );
 			return EXIT_FAILURE;

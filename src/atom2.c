@@ -78,7 +78,7 @@ const char* Atom2_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len);
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom2_new()");
 		p->len = len;
 		if(len > 0)
 		memcpy(p->str, str, len);

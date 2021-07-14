@@ -31,7 +31,7 @@ struct T {
 T Stack_new(void) {
 	T stack;
 	NEW(stack);
-	if(stack == NULL) THROW(Mem_Failed);
+	if(stack == NULL) THROW(Mem_Failed,"Stack_new()");
 	stack->count = 0;
 	stack->head = NULL;
 	stack->id = MAGIC_ID;
@@ -59,7 +59,7 @@ void Stack_push(T stack, void* x) {
 
 	assert(!isBadPtr(stack) && (stack->id == MAGIC_ID));
 	NEW(t);
-	if(isBadPtr(t)) THROW(Mem_Failed);
+	if(isBadPtr(t)) THROW(Mem_Failed,"Stack_push()");
 	t->x = x;
 	t->link = stack->head;
 	stack->head = t;

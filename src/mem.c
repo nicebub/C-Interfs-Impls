@@ -23,9 +23,9 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 	ptr = malloc(nbytes);
 	if(ptr == NULL) {
 		if(file == NULL)
-			THROW(Mem_Failed);
+			THROW(Mem_Failed,"Mem_alloc()");
 		else
-			Except_raise(&Mem_Failed,file,line);
+			Except_raise(&Mem_Failed,file,"Mem_alloc()",line);
 	}
 	return ptr;
 }
@@ -37,9 +37,9 @@ void* Mem_calloc(long count, long nbytes, const char* file, int line) {
 	ptr = calloc(count,nbytes);
 	if(ptr == NULL) {
 		if(file == NULL)
-			THROW(Mem_Failed);
+			THROW(Mem_Failed,"Mem_calloc");
 		else
-			Except_raise(&Mem_Failed,file,line);
+			Except_raise(&Mem_Failed,file,"Mem_calloc()",line);
 	}
 	return ptr;
 }
@@ -53,9 +53,9 @@ void* Mem_resize(void* ptr, long nbytes, const char* file, int line) {
 	ptr = realloc(ptr, nbytes);
 	if(ptr == NULL) {
 		if(file == NULL)
-			THROW(Mem_Failed);
+			THROW(Mem_Failed,"Mem_resize()");
 		else
-			Except_raise(&Mem_Failed,file,line);
+			Except_raise(&Mem_Failed,file,"Mem_resize()",line);
 	}
 	return ptr;
 }

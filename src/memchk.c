@@ -51,7 +51,7 @@ void Mem_free(void* ptr, const char* file, int line) {
 		struct descriptor* bp;
 		if (((unsigned long)ptr)%(sizeof(union align)) != 0
 		|| (bp = find(ptr)) == NULL || bp->free)
-			Except_raise(&Assert_Failed,file,line);
+			Except_raise(&Assert_Failed,file,"Mem_free()",line);
 		bp->free = freelist.free;
 		freelist.free = bp;
 	}
@@ -66,7 +66,7 @@ void* Mem_resize(void* ptr, long nbytes, const char* file, int line) {
 	
 	if (((unsigned long)ptr)%(sizeof(union align)) != 0
 	|| (bp = find(ptr)) == NULL || bp->free)
-		Except_raise(&Assert_Failed,file,line);
+		Except_raise(&Assert_Failed,file,"Mem_resize()",line);
 	newptr = Mem_alloc(nbytes, file, line);
 	memcpy(newptr, ptr, nbytes < bp->size? nbytes : bp->size);
 	Mem_free(ptr,file,line);
@@ -122,9 +122,9 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 			}
 			else{
 				if(file == NULL)
-					THROW(Mem_Failed);
+					THROW(Mem_Failed,"Mem_alloc()");
 				else
-					Except_raise(&Mem_Failed,file,line);
+					Except_raise(&Mem_Failed,file,"Mem_alloc()",line);
 			}
 			
 		}
@@ -133,9 +133,9 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 			if((ptr = malloc(nbytes + NALLOC)) == NULL
 			|| (newptr = dalloc(ptr, nbytes + NALLOC, __FILE__, __LINE__)) == NULL) {
 				if(file == NULL)
-					THROW(Mem_Failed);
+					THROW(Mem_Failed,"Mem_alloc()");
 				else
-					Except_raise(&Mem_Failed,file,line);
+					Except_raise(&Mem_Failed,file,"Mem_alloc()",line);
 			}
 			newptr->free = freelist.free;
 			freelist.free = newptr;

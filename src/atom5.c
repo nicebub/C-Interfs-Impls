@@ -42,10 +42,10 @@ void Atom5_fillRandom() {
 }
 void Atom5_init(const long hint) {
 	assert(hint > 0 || !"hint can't be less than 0");
-	if(hint <= 0) THROW(Assert_Failed);
+	if(hint <= 0) THROW(Assert_Failed,"Atom5_init()");
 	assert((isBadPtr(buckets)) || !"buckets already allocated");
 	buckets = ALLOC(sizeof(*buckets)*hint);
-    if(isBadPtr(buckets)) THROW(Mem_Failed);
+    if(isBadPtr(buckets)) THROW(Mem_Failed,"Atom5_init()");
     /*
     if(!buckets) {
 	   fprintf(stderr, "cannot allocate memory in Atom5_init\n");
@@ -99,7 +99,7 @@ const char* Atom5_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len + 1);
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom5_new()");
 		p->len = len;
 		p->str = (char*)(p + 1);
 	   p->link = NULL;
@@ -234,7 +234,7 @@ const char* Atom_add(const char* str, int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p));
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom_add()");
 		p->len = len;
 		p->str = (char*)str;
 	   p->link = NULL;
