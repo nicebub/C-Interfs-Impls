@@ -14,7 +14,7 @@
 #include "include/atom4.h"
 #include "include/defines.h"
 #include "include/assert.h"
-// #include "include/mem.h" for later
+#include "include/mem.h"
 
 // INCLUDES BEST VERSION OF ATOM_LENGTH
 

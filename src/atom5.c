@@ -17,7 +17,7 @@
 #include "include/defines.h"
 #include "include/assert.h"
 #include "include/except.h"
-// #include "include/mem.h" for later
+#include "include/mem.h"
 
 // INCLUDES BEST VERSION OF ATOM_LENGTH
 
@@ -173,14 +173,14 @@ void Atom_free(const char * str) {
 	if((p = buckets[h])->str == str) {
 		buckets[h] = p->link;
 		p->link = NULL;
-		FREE(&p);
+		FREE(p);
 		return;
 	}
 	for(; p->link; p = p->link) {
 		l = p->link->link;
 		if(p->link->str == str) {
 		    p->link->link = NULL;
-			FREE(&p->link);
+			FREE(p->link);
 			p->link = l;
 			return;
 		}
@@ -197,7 +197,7 @@ void Atom_reset(void) {
 		for(p = buckets[i]; p; p = q) {
 			q = p->link;
 		    p->link = NULL;
-			FREE(&p);
+			FREE(p);
 		}
 }
 void Atom_vload(const char *str, ...) {

@@ -13,9 +13,9 @@
 #include "include/atom.h"
 #include "include/defines.h"
 #include "include/assert.h"
-// #include "include/mem.h" for later
+#include "include/mem.h"
 
-const Except_T Mem_Failed = { "Cannot Allocate Memory" };
+extern const Except_T Mem_Failed;  // = { "Cannot Allocate Memory" };
 
 #define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))

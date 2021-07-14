@@ -10,7 +10,7 @@
 #include <stdlib.h>
 //#include <assert.h>
   #include "include/assert.h"
-//  #include "include/mem.h" for later
+#include "include/mem.h"
 #include "include/stack.h"
 #include "include/defines.h"
 #define MAGIC_ID 999
@@ -80,7 +80,7 @@ void* Stack_pop(T stack) {
 	stack->head = t->link;
 	stack->count--;
 	x = t->x;
-	FREE(&t);
+	FREE(t);
 	return x;
 }
 
@@ -89,9 +89,9 @@ void Stack_free(T* stack) {
 	assert(!isBadPtr(stack) && !isBadPtr(*stack) && ((*stack)->id == MAGIC_ID));
 	for( t = (*stack)->head; t; t = u ) {
 		u = t->link;
-		FREE(&t);
+		FREE(t);
 	}
-	FREE(&stack);
+	FREE(stack);
 }
 #undef T
 #undef MAGIC_ID

@@ -20,6 +20,7 @@
 #include "include/atom4.h"
 #include "include/atom5.h"
 #include "include/defines.h"
+#include "include/mem.h"
 // #include "mem.h"
 extern int getword(FILE* fp, char *, const int);
 #define MAX_DIST 10
@@ -111,7 +112,7 @@ int main(int argc, const char* argv[]) {
 			assert(!isBadPtr(str));
 			strcpy(str, *argv);
 			given = strtol(str, NULL, 10);
-			FREE(&str);
+			FREE(str);
 			hint = &given;
 		}
 		result =  gettimeofday(&seed, NULL);
@@ -165,7 +166,7 @@ void finishSum(const long b, long* cl, long** cl2) {
 	assert(!isBadPtr(cl));
 	assert(!isBadPtr(cl2) && !isBadPtr(*cl2));
 	while((*cl2)[0] < cl[0]) {
-		(*cl2) = REALLOC((*cl2), sizeof((**cl2))*(*cl2)[0]*2);
+		(*cl2) = RESIZE((*cl2), sizeof((**cl2))*(*cl2)[0]*2);
 	    strerror(errno);
 	    if((*cl2) == NULL)
 		   assert(0);
