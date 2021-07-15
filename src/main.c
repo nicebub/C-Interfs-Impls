@@ -91,16 +91,17 @@ void run_timer_new(FILE* fp, struct timeval seed, long *hint,
 			VariableAtomClosureFnDecl, VariableAtomInitFnDecl,
 			VariableAtomvloadFnDecl, VariableAtomaloadFnDecl);
 
+
 int main(int argc, const char* argv[]) {
 	FILE* fp;
-    struct timeval seed= {0};
+	struct timeval seed= {0};
 	int result;
 	if(argc > 1) {
 		long given=0, *hint = NULL;
 
 		fp = fopen(argv[1], "r");
 		TRY("main()")
-//			assert(!isBadPtr(fp));
+			 assert(!isBadPtr(fp));
 			if(isBadPtr(fp)) THROW(Assert_Failed,"main()");
 		CATCH(Assert_Failed){
 			fprintf(stderr, "%s\n", strerror(errno) );
