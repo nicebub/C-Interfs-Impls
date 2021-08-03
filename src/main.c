@@ -260,8 +260,9 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 	dist = ALLOC(sizeof(*dist) * MAX_DIST);
 	assert(!isBadPtr(dist));
 
-	for(long i = 0; i < MAX_DIST; i++)
+	for(long i = 0; i < MAX_DIST; i++){
 		dist[i] = 0;
+	}
 		dist[0] = MAX_DIST;
 	fseek(fp, 0UL, SEEK_SET);
 	VariableAtomClosureFn(beginSum, atomSum, finishSum, sumNwords, &dist);
@@ -277,10 +278,17 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 	printf("\n");
 // 	printf("Max List Size: %d\n", sumNwords[2]+1);
     printf("Words added: %ld\n", sumNwords[1]);
+#ifdef __GNUC__
+	printf("Atom_length on all atoms: %ld seconds, %ld microseconds\n",
+		time2.tv_sec, time2.tv_usec);
+	printf("Atom_string/Atom_new:  time %ld seconds %ld microseconds\n",
+		time1.tv_sec , time1.tv_usec);
+#else
 	printf("Atom_length on all atoms: %ld seconds, %d microseconds\n",
 		time2.tv_sec, time2.tv_usec);
 	printf("Atom_string/Atom_new:  time %ld seconds %d microseconds\n",
 		time1.tv_sec , time1.tv_usec);
+#endif
 	free(sumNwords);
 	free(dist);
 }
