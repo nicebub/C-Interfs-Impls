@@ -20,9 +20,9 @@ static struct descriptor freelist = {&freelist};
 union align {
 	int i;
 	long l;
-//	long long ll;
+	long long ll;
 	long *lp;
-//	long long *llp;
+	long long *llp;
 	void *p;
 	void (*fp)(void);
 	float f;
@@ -52,6 +52,7 @@ void Mem_free(void* ptr, const char* file, int line) {
 		if (((unsigned long)ptr)%(sizeof(union align)) != 0
 		|| (bp = find(ptr)) == NULL || bp->free)
 			Except_raise(&Assert_Failed,file,"Mem_free()",line);
+
 		bp->free = freelist.free;
 		freelist.free = bp;
 	}
@@ -88,7 +89,7 @@ static struct descriptor* dalloc(void* ptr, long size, const char* file, int lin
 	static struct descriptor* avail;
 	static int nleft;
 	
-	if(nleft <=0) {
+	if(nleft <= 0) {
 		avail = malloc(NDESCRIPTORS*sizeof(*avail));
 		if(avail == NULL)
 			return NULL;
@@ -104,20 +105,25 @@ static struct descriptor* dalloc(void* ptr, long size, const char* file, int lin
 }
 
 void* Mem_alloc(long nbytes, const char* file, int line) {
-	struct descriptor* bp;
+	struct descriptor* bp, *prev;
 	void* ptr;
 	
 	assert(nbytes > 0);
 	nbytes = ((nbytes + sizeof(union align) - 1)/
 		(sizeof(union align))) * (sizeof(union align));
+		prev = freelist.free;
 	for(bp = freelist.free; bp; bp = bp->free){
 		if(bp->size > nbytes){
 			bp->size -= nbytes;
 			ptr = (char*) bp->ptr + bp->size;
+			if(bp->size == sizeof(union align)){
+				freelist.free = freelist.free->free;
+			}
 			if( (bp = dalloc(ptr, nbytes, file, line)) != NULL) {
 				unsigned h = hash(ptr, htab);
 				bp->link = htab[h];
 				htab[h] = bp;
+				memset(ptr,'\x5',nbytes);
 				return ptr;
 			}
 			else{
