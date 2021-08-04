@@ -142,7 +142,7 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 			if((ptr = malloc(nbytes + NALLOC)) == NULL
 			|| (newptr = dalloc(ptr, nbytes + NALLOC, __FILE__, __LINE__)) == NULL) {
 				if (ptr)
-					free(ptr)
+					free(ptr);
 				ptr = NULL;
 				if(file == NULL)
 					THROW(Mem_Failed,"Mem_alloc()");
