@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "include/assert.h"
 #include "include/except.h"
@@ -37,6 +38,9 @@ union align {
 
 #define NALLOC ((4096 + sizeof(union align) - 1) / \
 	(sizeof(union align)))*(sizeof(union align))
+
+#define INC_ADJ Mem_stats(1, __FILE__, __LINE__)
+#define INC_NONADJ Mem_stats(2,__FILE__, __LINE__)
 
 static struct descriptor* find(const void* ptr) {
 	struct descriptor *bp = htab[hash(ptr,htab)];
@@ -113,6 +117,14 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 		(sizeof(union align))) * (sizeof(union align));
 		prev = &freelist;
 	for(bp = freelist.free; bp; bp = bp->free){
+		if (bp != &freelist && bp->free != &freelist){
+			if ((bp->ptr + bp->size) == bp->free->ptr){
+				INC_ADJ;
+			}
+			else{
+				INC_NONADJ;
+			}
+		}
 		if(bp->size > nbytes){
 			bp->size -= nbytes;
 			ptr = (char*) bp->ptr + bp->size;
@@ -158,3 +170,26 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 	return NULL;
 }
 
+void Mem_stats(int type, const char* file, int line) {
+	assert(type >= 1 && type <= 3);
+	static long adj=0, nonadj=0;
+	if(type == 1) {
+		adj++;
+		return;
+	}
+	else if (type == 2) {
+		nonadj++;
+		return;
+	}
+	else{
+		if(file != NULL){
+			fprintf(stderr,"%s:%d --Memory Stats--\n", file, line);
+		}
+		else{
+			fprintf(stderr,"Source line %d: --Memory Stats--\n", line);
+		}
+		fprintf(stderr,"Adjacent Free Blocks: %ld\n", adj);
+		fprintf(stderr,"Non-adjacent Free Blocks: %ld\n", nonadj);
+		return;
+	}
+}

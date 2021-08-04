@@ -153,6 +153,8 @@ int main(int argc, const char* argv[]) {
 		Atom_free(Atom_add("is", strlen("is")));
 		Atom_reset();
 		fclose(fp);
+
+		STATS;
 	}
 	return EXIT_SUCCESS;
 }
@@ -171,7 +173,7 @@ void finishSum(const long b, long* cl, long** cl2) {
 	assert(!isBadPtr(cl));
 	assert(!isBadPtr(cl2) && !isBadPtr(*cl2));
 	while((*cl2)[0] < cl[0]) {
-		(*cl2) = RESIZE((*cl2), sizeof((**cl2))*(*cl2)[0]*2);
+		(*cl2) =  RESIZE((*cl2), sizeof((**cl2))*(*cl2)[0]*2);
 	    strerror(errno);
 	    if((*cl2) == NULL)
 		   assert(0);

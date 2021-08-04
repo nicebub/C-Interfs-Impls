@@ -73,7 +73,7 @@ ${EXEC}: ${FULLOBJS}
 	${CC} ${CFLAGS} ${DEBUG} $^ -o $@
 
 lint:
-	 ${LINT} ${LINTFLAGS} src/*.c include/*.h
+	 ${LINT} ${LINTFLAGS} ${SRCDIR}/*.c ${HDRDIR}/*.h
 
 clean:
 	${CLEANUP} ${FULLOBJDIR}/*
