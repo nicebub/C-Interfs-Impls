@@ -286,7 +286,7 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 	printf("\n");
 // 	printf("Max List Size: %d\n", sumNwords[2]+1);
     printf("Words added: %ld\n", sumNwords[1]);
-#ifdef __GNUC__
+#ifndef __APPLE__
 	printf("Atom_length on all atoms: %ld seconds, %ld microseconds\n",
 		time2.tv_sec, time2.tv_usec);
 	printf("Atom_string/Atom_new:  time %ld seconds %ld microseconds\n",
