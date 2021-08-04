@@ -295,6 +295,6 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 	printf("Atom_string/Atom_new:  time %ld seconds %d microseconds\n",
 		time1.tv_sec , time1.tv_usec);
 #endif
-	free(sumNwords);
-	free(dist);
+//	free(sumNwords);
+	FREE(dist);
 }

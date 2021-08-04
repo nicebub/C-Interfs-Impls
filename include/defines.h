@@ -10,10 +10,10 @@
 #define INCLUDE_DEFINES_H_
 
 #define isBadPtr(p) (((p) == NULL) ? 1 : 0 || !"NULL POINTER")
-#define NEW(x) ((x)) = malloc(sizeof(*(x)));
-#define ALLOC(x) malloc((x))
-#define FREE(x) free(*(x)); *(x) = NULL
+//#define NEW(x) ((x)) = malloc(sizeof(*(x)));
+//#define ALLOC(x) malloc((x))
+//#define FREE(x) free(*(x)); *(x) = NULL
 //#define REALLOC(x, y) reallocf((x), (y))
-#define REALLOC(x, y) realloc((x), (y))
+//#define REALLOC(x, y) realloc((x), (y))
 
 #endif  // INCLUDE_DEFINES_H_

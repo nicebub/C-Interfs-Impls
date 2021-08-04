@@ -111,14 +111,17 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 	assert(nbytes > 0);
 	nbytes = ((nbytes + sizeof(union align) - 1)/
 		(sizeof(union align))) * (sizeof(union align));
-		prev = freelist.free;
+		prev = &freelist;
 	for(bp = freelist.free; bp; bp = bp->free){
 		if(bp->size > nbytes){
 			bp->size -= nbytes;
 			ptr = (char*) bp->ptr + bp->size;
-			if(bp->size == sizeof(union align)){
-				freelist.free = freelist.free->free;
+
+			if(bp->size <= sizeof(union align)){
+				prev->free = bp->free;
+				bp->free = NULL;
 			}
+
 			if( (bp = dalloc(ptr, nbytes, file, line)) != NULL) {
 				unsigned h = hash(ptr, htab);
 				bp->link = htab[h];
@@ -138,6 +141,9 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 			struct descriptor* newptr;
 			if((ptr = malloc(nbytes + NALLOC)) == NULL
 			|| (newptr = dalloc(ptr, nbytes + NALLOC, __FILE__, __LINE__)) == NULL) {
+				if (ptr)
+					free(ptr)
+				ptr = NULL;
 				if(file == NULL)
 					THROW(Mem_Failed,"Mem_alloc()");
 				else
@@ -146,7 +152,9 @@ void* Mem_alloc(long nbytes, const char* file, int line) {
 			newptr->free = freelist.free;
 			freelist.free = newptr;
 		}
+		prev = bp;
 	}
 	assert(0);
 	return NULL;
 }
+
