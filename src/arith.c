@@ -24,7 +24,7 @@ int Arith_div(const int x, const int y) {
 	if((truncTop / truncBottom == truncDiv) && ((x < 0) != (y < 0)) && (x%y != 0))
 		return x/y - 1;
 	else{
-		if(y == 0) THROW(Except_Illegal_Division_By_Zero);
+		if(y == 0) THROW(Except_Illegal_Division_By_Zero,"Arith_div()");
 		return x/y;
 	}
 }
@@ -35,7 +35,7 @@ int Arith_mod(const int x, const int y) {
 	if((truncTop / truncBottom == truncDiv) && ((x < 0) != (y < 0)) && (x%y != 0))
 		return x%y + y;
 		else{
-			if(y == 0) THROW(Except_Illegal_Division_By_Zero);
+			if(y == 0) THROW(Except_Illegal_Division_By_Zero,"Arith_div()");
 			return x%y;
 		}
 }

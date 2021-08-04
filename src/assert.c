@@ -8,9 +8,12 @@
 // I have made a few changes and revisions to make the code more modern as of
 // the std gnu2x
 
-#include "assert.h"
-const Except_T Assert_Failed = { "Assertion failed" };
+#include "include/assert.h"
 
+#ifndef NDEBUG
+#include "include/except.h"
+const Except_T Assert_Failed = { "Assertion failed" };
+#endif
 void (assert)(int e) {
 	assert(e);
 }

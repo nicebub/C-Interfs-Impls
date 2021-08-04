@@ -13,9 +13,9 @@
 #include "include/atom.h"
 #include "include/defines.h"
 #include "include/assert.h"
-// #include "include/mem.h" for later
+#include "include/mem.h"
 
-const Except_T Mem_Failed = { "Cannot Allocate Memory" };
+extern const Except_T Mem_Failed;  	// = { "Cannot Allocate Memory" };
 
 #define BSIZE 2039
 #define NELEMS(x) ((sizeof (x))/(sizeof ((x)[0])))
@@ -76,7 +76,7 @@ const char* Atom_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len + 1);
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom_new()");
 		p->len = len;
 		p->str = (char*)(p + 1);
 		if(len > 0)

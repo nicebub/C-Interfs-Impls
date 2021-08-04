@@ -16,7 +16,7 @@
 #include "include/atom3.h"
 #include "include/defines.h"
 #include "include/assert.h"
-// #include "include/mem.h" for later
+#include "include/mem.h"
 
 extern const Except_T Mem_Failed;// = { "Cannot Allocate Memory" };
 
@@ -77,7 +77,7 @@ const char* Atom3_new(const char* str, const int len) {
 			return p->str;
 	}
 		p = ALLOC(sizeof (*p) + len + 1);
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom3_new()");
 		p->len = len;
 		p->str = (char*)(p + 1);
 		if(len > 0)

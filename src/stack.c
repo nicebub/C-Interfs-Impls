@@ -10,7 +10,7 @@
 #include <stdlib.h>
 //#include <assert.h>
   #include "include/assert.h"
-//  #include "include/mem.h" for later
+#include "include/mem.h"
 #include "include/stack.h"
 #include "include/defines.h"
 #define MAGIC_ID 999
@@ -31,7 +31,7 @@ struct T {
 T Stack_new(void) {
 	T stack;
 	NEW(stack);
-	if(stack == NULL) THROW(Mem_Failed);
+	if(stack == NULL) THROW(Mem_Failed,"Stack_new()");
 	stack->count = 0;
 	stack->head = NULL;
 	stack->id = MAGIC_ID;
@@ -59,7 +59,7 @@ void Stack_push(T stack, void* x) {
 
 	assert(!isBadPtr(stack) && (stack->id == MAGIC_ID));
 	NEW(t);
-	if(isBadPtr(t)) THROW(Mem_Failed);
+	if(isBadPtr(t)) THROW(Mem_Failed,"Stack_push()");
 	t->x = x;
 	t->link = stack->head;
 	stack->head = t;
@@ -80,7 +80,7 @@ void* Stack_pop(T stack) {
 	stack->head = t->link;
 	stack->count--;
 	x = t->x;
-	FREE(&t);
+	FREE(t);
 	return x;
 }
 
@@ -89,9 +89,9 @@ void Stack_free(T* stack) {
 	assert(!isBadPtr(stack) && !isBadPtr(*stack) && ((*stack)->id == MAGIC_ID));
 	for( t = (*stack)->head; t; t = u ) {
 		u = t->link;
-		FREE(&t);
+		FREE(t);
 	}
-	FREE(&stack);
+	FREE(stack);
 }
 #undef T
 #undef MAGIC_ID

@@ -16,7 +16,7 @@
 #include "include/atom2.h"
 #include "include/defines.h"
 #include "include/assert.h"
-// #include "include/mem.h" for later
+#include "include/mem.h"
 
 extern const Except_T Mem_Failed;// = { "Cannot Allocate Memory" };
 
@@ -78,7 +78,7 @@ const char* Atom2_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len);
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom2_new()");
 		p->len = len;
 		if(len > 0)
 		memcpy(p->str, str, len);

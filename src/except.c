@@ -16,46 +16,34 @@
 
 Except_Frame* Except_stack = NULL;
 
-void Except_raise(const T *e, const char *file,
+void Except_raise(const T *e, const char *file, const char* func,
 	int line) {
 		Except_Frame *p = Except_stack;
 		
 		assert(e);
-		if(Except_stack == NULL) {
-			/*
+		if(Except_stack == NULL){
 			fprintf(stderr, "Uncaught exception");
 			if(e->reason)
-				fprintf(stderr, " %s", e->reason);
+			fprintf(stderr, " %s", e->reason);
 			else
-				fprintf(stderr, " at 0x%p", e);
-			if(file && line > 0)
+			fprintf(stderr, " at 0x%p", e);
+			if(file && line > 0){
+				if(func)
+				fprintf(stderr, " raised in %s at %s:%d\n", func, file, line);
+				else
 				fprintf(stderr, " raised at %s:%d\n", file, line);
+			}
 			fprintf(stderr, "aborting...\n");
 			fflush(stderr);
 			abort();
-			*/
 		}
 		else{
 			p->exception = e;
 			p->file = file;
 			p->line = line;
-			for(;Except_stack != NULL && !Except_stack->finally;Except_stack = Except_stack->prev) {
-					fprintf(stderr, "called from %s at %s:%d\n",Except_stack->file,
-					Except_stack->file,Except_stack->line);
-			}
+			p->func = func;
+			Except_stack = Except_stack->prev;
+
+			longjmp(p->env, Except_raised);
 		}
-		if(Except_stack == NULL){ 
-			fprintf(stderr, "Uncaught exception");
-			if(e->reason)
-				fprintf(stderr, " %s", e->reason);
-			else
-				fprintf(stderr, " at 0x%p", e);
-			if(file && line > 0)
-				fprintf(stderr, " raised in %s at %s:%d\n", file, file, line);
-			fprintf(stderr, "aborting...\n");
-			fflush(stderr);
-			abort();
-		}
-//		Except_stack = Except_stack->prev;
-		longjmp(p->env, Except_raised);
 	}

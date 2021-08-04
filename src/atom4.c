@@ -14,7 +14,7 @@
 #include "include/atom4.h"
 #include "include/defines.h"
 #include "include/assert.h"
-// #include "include/mem.h" for later
+#include "include/mem.h"
 
 // INCLUDES BEST VERSION OF ATOM_LENGTH
 
@@ -79,7 +79,7 @@ const char* Atom4_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len + 1);
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom4_new()");
 		p->len = len;
 		p->str = (char*)(p + 1);
 		if(len > 0)

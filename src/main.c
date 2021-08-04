@@ -20,6 +20,7 @@
 #include "include/atom4.h"
 #include "include/atom5.h"
 #include "include/defines.h"
+#include "include/mem.h"
 // #include "mem.h"
 extern int getword(FILE* fp, char *, const int);
 #define MAX_DIST 10
@@ -52,8 +53,11 @@ long** cl2, VariableAtomLengthFnDecl)
 
 #define VariableAtomaloadFnDecl void (*Atm_aload)(const char * strs[])
 #define VariableAtomaloadFn Atm_aload
-
-#define TBLOCK TRY\
+#ifdef NDEBUG
+const Except_T Assert_Failed = { "Assertion Failed" };
+//#define Assert_Failed 0
+#endif
+#define TBLOCK TRY("main()")\
 		assert(result >=0);\
 	CATCH(Assert_Failed){\
 		fprintf(stderr, "%s\n", strerror(errno)); \
@@ -87,16 +91,18 @@ void run_timer_new(FILE* fp, struct timeval seed, long *hint,
 			VariableAtomClosureFnDecl, VariableAtomInitFnDecl,
 			VariableAtomvloadFnDecl, VariableAtomaloadFnDecl);
 
+
 int main(int argc, const char* argv[]) {
 	FILE* fp;
-    struct timeval seed= {0};
+	struct timeval seed= {0};
 	int result;
 	if(argc > 1) {
 		long given=0, *hint = NULL;
 
 		fp = fopen(argv[1], "r");
-		TRY
-			assert(!isBadPtr(fp));
+		TRY("main()")
+			 assert(!isBadPtr(fp));
+			if(isBadPtr(fp)) THROW(Assert_Failed,"main()");
 		CATCH(Assert_Failed){
 			fprintf(stderr, "%s\n", strerror(errno) );
 			return EXIT_FAILURE;
@@ -111,7 +117,7 @@ int main(int argc, const char* argv[]) {
 			assert(!isBadPtr(str));
 			strcpy(str, *argv);
 			given = strtol(str, NULL, 10);
-			FREE(&str);
+			FREE(str);
 			hint = &given;
 		}
 		result =  gettimeofday(&seed, NULL);
@@ -165,7 +171,7 @@ void finishSum(const long b, long* cl, long** cl2) {
 	assert(!isBadPtr(cl));
 	assert(!isBadPtr(cl2) && !isBadPtr(*cl2));
 	while((*cl2)[0] < cl[0]) {
-		(*cl2) = REALLOC((*cl2), sizeof((**cl2))*(*cl2)[0]*2);
+		(*cl2) = RESIZE((*cl2), sizeof((**cl2))*(*cl2)[0]*2);
 	    strerror(errno);
 	    if((*cl2) == NULL)
 		   assert(0);
@@ -226,7 +232,7 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 						VariableAtomStringFnDecl, VariableAtomClosureFnDecl,
 	VariableAtomvloadFnDecl, VariableAtomaloadFnDecl) {
 	struct timeval time1, time2;
-	long  *sumNwords, *dist;
+	long  sumNwords[3], *dist;
 	assert(!isBadPtr(fp));
 	assert(!isBadPtr(VariableAtomFillRandomFn));
 	assert(!isBadPtr(VariableAtomStringFn));
@@ -251,7 +257,7 @@ void run_timer(FILE* fp, struct timeval seed, VariableAtomFillRandomFnDecl,
 
 	time1 = timerfunc(fp, VariableAtomStringFn);
 	time2 = cltimerfunc(VariableAtomClosureFn);
-	sumNwords = ALLOC(sizeof(*sumNwords) * 3);
+//	sumNwords = ALLOC(sizeof(*sumNwords) * 3);
 
 	assert(!isBadPtr(sumNwords));
     sumNwords[0] = 0;

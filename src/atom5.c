@@ -17,7 +17,7 @@
 #include "include/defines.h"
 #include "include/assert.h"
 #include "include/except.h"
-// #include "include/mem.h" for later
+#include "include/mem.h"
 
 // INCLUDES BEST VERSION OF ATOM_LENGTH
 
@@ -42,9 +42,10 @@ void Atom5_fillRandom() {
 }
 void Atom5_init(const long hint) {
 	assert(hint > 0 || !"hint can't be less than 0");
+	if(hint <= 0) THROW(Assert_Failed,"Atom5_init()");
 	assert((isBadPtr(buckets)) || !"buckets already allocated");
 	buckets = ALLOC(sizeof(*buckets)*hint);
-    if(isBadPtr(buckets)) THROW(Mem_Failed);
+    if(isBadPtr(buckets)) THROW(Mem_Failed,"Atom5_init()");
     /*
     if(!buckets) {
 	   fprintf(stderr, "cannot allocate memory in Atom5_init\n");
@@ -98,7 +99,7 @@ const char* Atom5_new(const char* str, const int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p) + len + 1);
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom5_new()");
 		p->len = len;
 		p->str = (char*)(p + 1);
 	   p->link = NULL;
@@ -173,14 +174,14 @@ void Atom_free(const char * str) {
 	if((p = buckets[h])->str == str) {
 		buckets[h] = p->link;
 		p->link = NULL;
-		FREE(&p);
+		FREE(p);
 		return;
 	}
 	for(; p->link; p = p->link) {
 		l = p->link->link;
 		if(p->link->str == str) {
 		    p->link->link = NULL;
-			FREE(&p->link);
+			FREE(p->link);
 			p->link = l;
 			return;
 		}
@@ -197,7 +198,7 @@ void Atom_reset(void) {
 		for(p = buckets[i]; p; p = q) {
 			q = p->link;
 		    p->link = NULL;
-			FREE(&p);
+			FREE(p);
 		}
 }
 void Atom_vload(const char *str, ...) {
@@ -233,7 +234,7 @@ const char* Atom_add(const char* str, int len) {
 		}
 	}
 		p = ALLOC(sizeof (*p));
-		if(isBadPtr(p)) THROW(Mem_Failed);
+		if(isBadPtr(p)) THROW(Mem_Failed,"Atom_add()");
 		p->len = len;
 		p->str = (char*)str;
 	   p->link = NULL;

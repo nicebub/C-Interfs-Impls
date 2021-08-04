@@ -10,7 +10,7 @@
 #ifndef _INCLUDE_EXCEPT_H
 #define _INCLUDE_EXCEPT_H
 #include <setjmp.h>
-
+#include <stdlib.h>
 #define T Except_T
 typedef struct T {
 	const char *reason;
@@ -21,6 +21,7 @@ typedef struct T {
 	 Except_Frame *prev;
 	 jmp_buf env;
 	 const char * file;
+	const char* func;
 	 int line;
 	 int finally;
 	 const T * exception;
@@ -31,21 +32,22 @@ enum { Except_entered =0, Except_raised,
 extern Except_Frame* Except_stack;
 extern const Except_T Assert_Failed;
 
-void Except_raise(const T *e, const char *file, int line);
+void Except_raise(const T *e, const char *file, const char * func,int line);
 
-#define THROW(e) Except_raise(&(e), __FILE__, __LINE__)
+#define THROW(e,func) Except_raise(&(e), __FILE__, (func),__LINE__)
 
 #define RETHROW Except_raise(Except_frame.exception,\
-	Except_frame.file, Except_frame.line)
+	Except_frame.file, Except_frame.func,Except_frame.line)
 
 #define RETURN switch (Except_stack = Except_stack->prev, 0) default : return
 
-#define TRY do {\
+#define TRY(x) do {\
 	volatile int Except_flag;\
 	Except_Frame Except_frame;\
 	Except_frame.prev = Except_stack;\
 	Except_stack = &Except_frame;\
 	Except_frame.finally = 0;\
+     Except_frame.func = (x);\
 	Except_flag = setjmp(Except_frame.env);\
 	if(Except_flag == Except_entered) {
 
