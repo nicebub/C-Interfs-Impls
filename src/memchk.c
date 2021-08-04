@@ -183,12 +183,12 @@ void Mem_stats(int type, const char* file, int line) {
 	}
 	else{
 		if(file != NULL){
-			fprintf(stderr,"%s:%d --Memory Stats--\n", file, line);
+			fprintf(stderr,"%s:%d --Memory Stats--	", file, line);
 		}
 		else{
-			fprintf(stderr,"Source line %d: --Memory Stats--\n", line);
+			fprintf(stderr,"Source line %d: --Memory Stats--	", line);
 		}
-		fprintf(stderr,"Adjacent Free Blocks: %ld\n", adj);
+		fprintf(stderr,"Adjacent Free Blocks: %ld	", adj);
 		fprintf(stderr,"Non-adjacent Free Blocks: %ld\n", nonadj);
 		return;
 	}

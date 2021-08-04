@@ -20,7 +20,7 @@ extern void *Mem_calloc(long count, long nbytes, const char* file, int line);
 extern void Mem_free(void* ptr,const char* file, int line);
 extern void *Mem_resize(void* ptr, long nbytes, const char* file, int line);
 
-#ifdef NNDEBUG
+#ifdef NDEBUG
 	extern void Mem_stats(int type,const char* file, int line);
 	#define STATS Mem_stats(3,__FILE__,__LINE__);
 #else
